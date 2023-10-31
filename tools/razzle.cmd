@@ -1,4 +1,4 @@
-@echo on
+@echo off
 
 echo Setting up dev environment...
 
