@@ -77,14 +77,14 @@ if "%_SKIP_NUGET_RESTORE%" == "1" (
 )
 
 @rem /p:GenerateAppxPackageOnBuild=false will prevent us from building the whole .msix package when building the wapproj project.
-set _BUILD_CMDLINE="%MSBUILD%" %OPENCON%\OpenConsole.sln /t:"%_MSBUILD_TARGET%" /m /p:Configuration=%_LAST_BUILD_CONF% /p:GenerateAppxPackageOnBuild=false /p:Platform=%ARCH% %_APPX_ARGS%
+set _BUILD_CMDLINE="%MSBUILD%" %OPENCON%\OpenConsole.sln /t:"%_MSBUILD_TARGET%" /m /p:Configuration=%_LAST_BUILD_CONF% /p:GenerateAppxPackageOnBuild=false /p:Platform=%ARCH% %_APPX_ARGS% /graph
 
 echo %_BUILD_CMDLINE%
 echo Starting build...
 
 @rem start indeterminate progress in the taskbar
 @rem this `<NUL set /p =` magic will output the text _without a newline_
-<NUL set /p =]9;4;3
+<NUL set /p =]9;4;3 
 
 %_BUILD_CMDLINE%
 
@@ -93,14 +93,14 @@ set _build_result=%errorlevel%
 if (%_build_result%) == (0) (
 
 @rem clear the progress
-<NUL set /p =]9;4
+<NUL set /p =]9;4 
 
 ) else (
 
 @rem set the taskbar to the error state, then sleep for 500ms, before clearing
 @rem the progress state. This will "blink" the error state into the taskbar
 
-<NUL set /p =]9;4;2;100
+<NUL set /p =]9;4;2;100 
 
 @rem this works to "sleep" the console for 500ms. `ping` can't wait for less
 @rem than 500ms, and it will only wait if the target address _doesn't_ respond,
@@ -108,7 +108,7 @@ if (%_build_result%) == (0) (
 
 ping 128.0.0.1 -n 1 -w 500 > nul
 
-<NUL set /p =]9;4
+<NUL set /p =]9;4 
 
 )
 
