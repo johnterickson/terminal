@@ -1,4 +1,4 @@
-@echo off
+@echo on
 
 rem bcz - Clean and build the solution.
 rem This is another script to help Microsoft developers feel at home working on the Terminal project.
