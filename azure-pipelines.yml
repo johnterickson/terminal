@@ -1,0 +1,120 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- main
+
+# run every hour
+schedules:
+- cron: 0 * * * *
+  displayName: Hourly Run 
+  always: true
+  branches:
+    include:
+    - main
+    
+pool:
+  name: 'MemoBuild-Pool'
+
+variables:
+  NUGET_PACKAGES: $(Pipeline.Workspace)/.nuget/packages
+  # SDL
+  Codeql.Enabled: false
+  runCodesignValidationInjection: false
+  skipComponentGovernanceDetection: true
+  skipNugetSecurityAnalysis: true
+  # perf
+  VSO_DEDUP_REDIRECT_TIMEOUT_IN_SEC: 5
+  # for msbuildcache
+  EnablePipelineCache: true
+  VsDevCmd: 'C:\Program Files\Microsoft Visual Studio\2022\Preview\Common7\Tools\VsDevCmd.bat'
+
+strategy:
+  matrix:
+    auditmode_x64-baseline:
+      BuildConfiguration: AuditMode
+      BuildPlatform: x64
+      AdditionalMsBuildArgs: ''
+    release_x64-baseline:
+      BuildConfiguration: Release
+      BuildPlatform: x64
+      AdditionalMsBuildArgs: ''
+    release_x86-baseline:
+      BuildConfiguration: Release
+      BuildPlatform: x86
+      AdditionalMsBuildArgs: ''
+    release_arm64-baseline:
+      BuildConfiguration: Release
+      BuildPlatform: arm64
+      AdditionalMsBuildArgs: ''
+    auditmode_x64-MSBuildCache:
+      BuildConfiguration: AuditMode
+      BuildPlatform: x64
+      AdditionalMsBuildArgs: '-graph -reportfileaccesses -p:MSBuildCacheEnabled=true -p:MSBuildCacheLogDirectory=$(Build.ArtifactStagingDirectory)\logs\MSBuildCache'
+    release_x64-MSBuildCache:
+      BuildConfiguration: Release
+      BuildPlatform: x64
+      AdditionalMsBuildArgs: '-graph -reportfileaccesses -p:MSBuildCacheEnabled=true -p:MSBuildCacheLogDirectory=$(Build.ArtifactStagingDirectory)\logs\MSBuildCache'
+    release_x86-MSBuildCache:
+      BuildConfiguration: Release
+      BuildPlatform: x86
+      AdditionalMsBuildArgs: '-graph -reportfileaccesses -p:MSBuildCacheEnabled=true -p:MSBuildCacheLogDirectory=$(Build.ArtifactStagingDirectory)\logs\MSBuildCache'
+    release_arm64-MSBuildCache:
+      BuildConfiguration: Release
+      BuildPlatform: arm64
+      AdditionalMsBuildArgs: '-graph -reportfileaccesses -p:MSBuildCacheEnabled=true -p:MSBuildCacheLogDirectory=$(Build.ArtifactStagingDirectory)\logs\MSBuildCache'
+
+steps:
+- checkout: self
+  submodules: recursive
+
+# set up env (vs preview)
+- script: |
+   cd %TEMP%
+   del vs_enterprise.exe
+   
+   curl.exe -L https://aka.ms/vs/17/pre/vs_enterprise.exe -o vs_enterprise.exe
+   
+   vs_enterprise.exe --passive --norestart --wait --config %CD%\.vsconfig
+   set VS_ERRORLEVEL=%ERRORLEVEL%
+   del vs_enterprise.exe
+   
+   IF "%VS_ERRORLEVEL%"=="0" (
+     echo install success: %VS_ERRORLEVEL%
+     exit /b 0
+   )
+   IF "%VS_ERRORLEVEL%"=="3010" (
+     echo install success: %VS_ERRORLEVEL%
+     exit /b 0
+   )
+
+   echo install fail: %VS_ERRORLEVEL%
+
+   CALL "$(VsDevCmd)"
+   msbuild --version
+  displayName: 'Install VS Preview'
+
+- template: .\build\pipelines\templates-v2\steps-restore-nuget.yml
+
+- task: VSBuild@1
+  displayName: Build OpenConsole.sln
+  inputs:
+    solution: 'OpenConsole.sln'
+    msbuildArgs: >-
+      /p:WindowsTerminalOfficialBuild=true;WindowsTerminalBranding=Dev;PGOBuildMode=None
+      /bl:$(Build.ArtifactStagingDirectory)\logs\msbuild.binlog
+      /ds:false
+      $(AdditionalMsBuildArgs)
+    platform: $(BuildPlatform)
+    configuration: $(BuildConfiguration)
+    msbuildArchitecture: x64
+    maximumCpuCount: true
+  env:
+    SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+
+- publish: $(Build.ArtifactStagingDirectory)\logs
+  displayName: Publish Logs
+  artifact: '$(System.JobDisplayName) logs'
+  condition: always()
