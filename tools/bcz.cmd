@@ -77,7 +77,7 @@ if "%_SKIP_NUGET_RESTORE%" == "1" (
 )
 
 @rem /p:GenerateAppxPackageOnBuild=false will prevent us from building the whole .msix package when building the wapproj project.
-set _BUILD_CMDLINE="%MSBUILD%" %OPENCON%\OpenConsole.sln /t:"%_MSBUILD_TARGET%" /m /p:Configuration=%_LAST_BUILD_CONF% /p:GenerateAppxPackageOnBuild=false /p:Platform=%ARCH% %_APPX_ARGS% %EXTRA_MSBUILD_ARGS%
+set _BUILD_CMDLINE="%MSBUILD%" %OPENCON%\OpenConsole.sln "/t:%_MSBUILD_TARGET%" /m /p:Configuration=%_LAST_BUILD_CONF% /p:GenerateAppxPackageOnBuild=false /p:Platform=%ARCH% %_APPX_ARGS% %EXTRA_MSBUILD_ARGS%
 
 echo %_BUILD_CMDLINE%
 echo Starting build...
