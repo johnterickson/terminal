@@ -156,6 +156,7 @@ jobs:
       platform: $(BuildPlatform)
       configuration: $(BuildConfiguration)
       maximumCpuCount: true
+      msbuildArchitecture: x64
 
   - ${{ if eq(parameters.publishArtifacts, true) }}:
     - publish: $(Build.SourcesDirectory)/msbuild.binlog

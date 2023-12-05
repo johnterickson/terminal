@@ -87,6 +87,7 @@ jobs:
       configuration: $(BuildConfiguration)
       maximumCpuCount: true
       clean: false
+      msbuildArchitecture: x64
 
   - task: CopyFiles@2
     displayName: Copy *.nupkg to Artifacts
