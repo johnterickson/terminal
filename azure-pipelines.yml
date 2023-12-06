@@ -74,6 +74,11 @@ steps:
 
 - script: |
     @echo on
+
+    echo -- DUMP ENV VARS --
+    set
+    echo -- DUMP ENV VARS --
+
     IF NOT EXIST R:\ (
       echo CREATE VDISK FILE=D:\ReFS.vhdx MAXIMUM=250000 TYPE=EXPANDABLE > diskpart.script.txt
       echo SELECT VDISK FILE=D:\ReFS.vhdx >> diskpart.script.txt
@@ -87,8 +92,9 @@ steps:
     format R: /fs:ReFS /Q /X /Y
     mkdir R:\s
 
-    handle "$(Build.SourcesDirectory)"
-    
+    wget.exe https://live.sysinternals.com/handle.exe -o handle.exe
+    handle.exe "$(Build.SourcesDirectory)"
+
     IF EXIST "$(Build.SourcesDirectory).old" ( rmdir /s /q "$(Build.SourcesDirectory).old" )
     IF EXIST "$(Build.SourcesDirectory)" (
       rmdir /s /q "$(Build.SourcesDirectory)" || move "$(Build.SourcesDirectory)" "$(Build.SourcesDirectory).old"
