@@ -19,7 +19,7 @@ pool:
   name: 'MemoBuild-Pool'
 
 variables:
-  NUGET_PACKAGES: $(Pipeline.Workspace)/.nuget/packages
+  NUGET_PACKAGES: D:\.nuget\packages
   # SDL
   Codeql.Enabled: false
   runCodesignValidationInjection: false
