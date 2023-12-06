@@ -92,17 +92,6 @@ steps:
     del %CD%ReFS.vhdx
     del diskpart.script.txt
 
-    mkdir "$(Build.ArtifactStagingDirectory)"
-    mkdir "$(Build.BinariesDirectory)"
-    mkdir "$(Build.SourcesDirectory)"
-    mkdir "$(Common.TestResultsDirectory)"
-  displayName: 'Remove previous VHDX'
-
-- script: |
-    @echo on
-
-    cd \
-
     echo CREATE VDISK FILE=%CD%ReFS.vhdx MAXIMUM=250000 TYPE=EXPANDABLE > diskpart.script.txt
     echo SELECT VDISK FILE=%CD%ReFS.vhdx >> diskpart.script.txt
     echo ATTACH VDISK >> diskpart.script.txt
@@ -111,6 +100,7 @@ steps:
     echo ASSIGN LETTER=R >> diskpart.script.txt
     type diskpart.script.txt
     diskpart /s diskpart.script.txt
+    del diskpart.script.txt
 
     format R: /fs:ReFS /Q /X /Y /DevDrv || format R: /fs:ReFS /Q /X /Y
 
