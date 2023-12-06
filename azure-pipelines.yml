@@ -90,6 +90,18 @@ steps:
     echo DETACH VDISK >> diskpart.script.txt
     diskpart /s diskpart.script.txt
     del %CD%ReFS.vhdx
+    del diskpart.script.txt
+
+    mkdir "$(Build.ArtifactStagingDirectory)"
+    mkdir "$(Build.BinariesDirectory)"
+    mkdir "$(Build.SourcesDirectory)"
+    mkdir "$(Common.TestResultsDirectory)"
+  displayName: 'Remove previous VHDX'
+
+- script: |
+    @echo on
+
+    cd \
 
     echo CREATE VDISK FILE=%CD%ReFS.vhdx MAXIMUM=250000 TYPE=EXPANDABLE > diskpart.script.txt
     echo SELECT VDISK FILE=%CD%ReFS.vhdx >> diskpart.script.txt
@@ -101,7 +113,6 @@ steps:
     diskpart /s diskpart.script.txt
 
     format R: /fs:ReFS /Q /X /Y /DevDrv || format R: /fs:ReFS /Q /X /Y
-
 
     # dir /s /b "%AGENT_BUILDDIRECTORY%\*"
     mkdir "R:\%AGENT_BUILDDIRECTORY:~3%"
@@ -195,5 +206,5 @@ steps:
   condition: always()
 
 - script: |
-    for /F %I IN ('dir /s /b \MSBuildCache\*.blob') DO (fsutil file queryExtentsAndRefCounts "%I" )
+    for /F %%I IN ('dir /s /b \MSBuildCache\*.blob') DO (fsutil file queryExtentsAndRefCounts "%%I" )
   displayName: 'check for CoW'
