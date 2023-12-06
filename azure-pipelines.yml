@@ -72,11 +72,11 @@ steps:
     Get-PhysicalDisk
   displayName: 'Disk Info'
 
-- script: |
-    cd \
-    curl.exe https://live.sysinternals.com/handle.exe -o handle.exe
-    handle.exe /accepteula "$(Agent.RootDirectory)"
-  displayName: 'show handles to Agent.RootDirectory'
+# - script: |
+#     cd \
+#     curl.exe https://live.sysinternals.com/handle.exe -o handle.exe
+#     handle.exe /accepteula "$(Agent.RootDirectory)"
+#   displayName: 'show handles to Agent.RootDirectory'
 
 - script: set
   displayName: 'DUMP ENV VARS'
@@ -102,12 +102,14 @@ steps:
 
     format R: /fs:ReFS /Q /X /Y
 
+    mkdir "R:\%AGENT_BUILDDIRECTORY:~3%"
+    robocopy /MOVE /E /R:0 /COPYALL "%AGENT_BUILDDIRECTORY%" "R:\%AGENT_BUILDDIRECTORY:~3%"
+
     IF EXIST "%AGENT_BUILDDIRECTORY%.old" ( rmdir /s /q "%AGENT_BUILDDIRECTORY%.old" )
     IF EXIST "%AGENT_BUILDDIRECTORY%" (
       rmdir /s /q "%AGENT_BUILDDIRECTORY%" || move "%AGENT_BUILDDIRECTORY%" "%AGENT_BUILDDIRECTORY%.old"
     )
 
-    mkdir "R:\%AGENT_BUILDDIRECTORY:~3%"
     mklink /J "%AGENT_BUILDDIRECTORY%" "R:\%AGENT_BUILDDIRECTORY:~3%"
 
     IF EXIST "\MSBuildCache.old" ( rmdir /s /q "\MSBuildCache.old" )
