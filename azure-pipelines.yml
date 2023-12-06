@@ -130,7 +130,7 @@ steps:
 
     mkdir R:\TEMP
     setx TEMP R:\TEMP
-    echo "##vso[task.setvariable variable=TEMP;]R:\TEMP"
+    echo ##vso[task.setvariable variable=TEMP;]R:\TEMP
   displayName: 'Remap AGENT_BUILDDIRECTORY to a ReFS (DevDrv if available) volume'
 
 - powershell: |
