@@ -72,6 +72,34 @@ steps:
     Get-PhysicalDisk
   displayName: 'Disk Info'
 
+- script: |
+    @echo on
+    IF NOT EXIST R:\ (
+      echo CREATE VDISK FILE=D:\ReFS.vhdx MAXIMUM=250000 TYPE=EXPANDABLE > diskpart.script.txt
+      echo SELECT VDISK FILE=D:\ReFS.vhdx >> diskpart.script.txt
+      echo ATTACH VDISK >> diskpart.script.txt
+      echo CREATE PARTITION PRIMARY >> diskpart.script.txt
+      echo FORMAT FS=REFS QUICK >> diskpart.script.txt
+      echo ASSIGN LETTER=R >> diskpart.script.txt
+      type diskpart.script.txt
+      diskpart /s diskpart.script.txt
+    )
+    format R: /fs:ReFS /Q /X
+    mkdir R:\s
+    IF EXIST "$(Build.SourcesDirectory).old" ( rmdir /s /q "$(Build.SourcesDirectory).old" )
+    IF EXIST "$(Build.SourcesDirectory)" (
+      rmdir /s /q "$(Build.SourcesDirectory)" || move "$(Build.SourcesDirectory)" "$(Build.SourcesDirectory).old"
+    )
+    
+    mklink /J "$(Build.SourcesDirectory)" R:\s
+
+    mkdir R:\TEMP
+    setx TEMP R:\TEMP
+    echo "##vso[task.setvariable variable=TEMP;]R:\TEMP"
+
+- script: |
+    dotnet nuget locals all -l
+
 - checkout: self
   submodules: recursive
 
