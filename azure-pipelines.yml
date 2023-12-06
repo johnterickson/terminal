@@ -33,38 +33,38 @@ variables:
 
 strategy:
   matrix:
-    # auditmode_x64-baseline:
-    #   BuildConfiguration: AuditMode
+    # # auditmode_x64-baseline:
+    # #   BuildConfiguration: AuditMode
+    # #   BuildPlatform: x64
+    # #   AdditionalMsBuildArgs: ''
+    # release_x64-baseline:
+    #   BuildConfiguration: Release
     #   BuildPlatform: x64
     #   AdditionalMsBuildArgs: ''
-    release_x64-baseline:
-      BuildConfiguration: Release
-      BuildPlatform: x64
-      AdditionalMsBuildArgs: ''
-    release_x86-baseline:
-      BuildConfiguration: Release
-      BuildPlatform: x86
-      AdditionalMsBuildArgs: ''
-    release_arm64-baseline:
-      BuildConfiguration: Release
-      BuildPlatform: arm64
-      AdditionalMsBuildArgs: ''
-    # auditmode_x64-MSBuildCache:
-    #   BuildConfiguration: AuditMode
-    #   BuildPlatform: x64
-    #   AdditionalMsBuildArgs: '-graph -reportfileaccesses -p:MSBuildCacheEnabled=true -p:MSBuildCacheLogDirectory=$(Build.ArtifactStagingDirectory)\logs\MSBuildCache'
+    # release_x86-baseline:
+    #   BuildConfiguration: Release
+    #   BuildPlatform: x86
+    #   AdditionalMsBuildArgs: ''
+    # release_arm64-baseline:
+    #   BuildConfiguration: Release
+    #   BuildPlatform: arm64
+    #   AdditionalMsBuildArgs: ''
+    # # auditmode_x64-MSBuildCache:
+    # #   BuildConfiguration: AuditMode
+    # #   BuildPlatform: x64
+    # #   AdditionalMsBuildArgs: '-graph -reportfileaccesses -p:MSBuildCacheEnabled=true -p:MSBuildCacheLogDirectory=$(Build.ArtifactStagingDirectory)\logs\MSBuildCache'
     release_x64-MSBuildCache:
       BuildConfiguration: Release
       BuildPlatform: x64
       AdditionalMsBuildArgs: '-graph -reportfileaccesses -p:MSBuildCacheEnabled=true -p:MSBuildCacheLogDirectory=$(Build.ArtifactStagingDirectory)\logs\MSBuildCache'
-    # release_x86-MSBuildCache:
+    # # release_x86-MSBuildCache:
+    # #   BuildConfiguration: Release
+    # #   BuildPlatform: x86
+    # #   AdditionalMsBuildArgs: '-graph -reportfileaccesses -p:MSBuildCacheEnabled=true -p:MSBuildCacheLogDirectory=$(Build.ArtifactStagingDirectory)\logs\MSBuildCache'
+    # release_arm64-MSBuildCache:
     #   BuildConfiguration: Release
-    #   BuildPlatform: x86
+    #   BuildPlatform: arm64
     #   AdditionalMsBuildArgs: '-graph -reportfileaccesses -p:MSBuildCacheEnabled=true -p:MSBuildCacheLogDirectory=$(Build.ArtifactStagingDirectory)\logs\MSBuildCache'
-    release_arm64-MSBuildCache:
-      BuildConfiguration: Release
-      BuildPlatform: arm64
-      AdditionalMsBuildArgs: '-graph -reportfileaccesses -p:MSBuildCacheEnabled=true -p:MSBuildCacheLogDirectory=$(Build.ArtifactStagingDirectory)\logs\MSBuildCache'
 
 steps:
 - powershell: |
@@ -93,7 +93,7 @@ steps:
     mkdir R:\s
 
     wget.exe https://live.sysinternals.com/handle.exe -o handle.exe
-    handle.exe "$(Build.SourcesDirectory)"
+    handle.exe /accepteula "$(Build.SourcesDirectory)"
 
     IF EXIST "$(Build.SourcesDirectory).old" ( rmdir /s /q "$(Build.SourcesDirectory).old" )
     IF EXIST "$(Build.SourcesDirectory)" (
