@@ -86,13 +86,13 @@ steps:
 
     cd \
 
-    echo SELECT VDISK FILE=D:\ReFS.vhdx > diskpart.script.txt
+    echo SELECT VDISK FILE=%CD%ReFS.vhdx > diskpart.script.txt
     echo DETACH VDISK >> diskpart.script.txt
     diskpart /s diskpart.script.txt
-    del D:\ReFS.vhdx
+    del %CD%ReFS.vhdx
 
-    echo CREATE VDISK FILE=D:\ReFS.vhdx MAXIMUM=250000 TYPE=EXPANDABLE > diskpart.script.txt
-    echo SELECT VDISK FILE=D:\ReFS.vhdx >> diskpart.script.txt
+    echo CREATE VDISK FILE=%CD%ReFS.vhdx MAXIMUM=250000 TYPE=EXPANDABLE > diskpart.script.txt
+    echo SELECT VDISK FILE=%CD%ReFS.vhdx >> diskpart.script.txt
     echo ATTACH VDISK >> diskpart.script.txt
     echo CREATE PARTITION PRIMARY >> diskpart.script.txt
     echo FORMAT FS=REFS QUICK >> diskpart.script.txt
@@ -102,8 +102,11 @@ steps:
 
     format R: /fs:ReFS /Q /X /Y
 
+
+    dir /s /b "%AGENT_BUILDDIRECTORY%"
     mkdir "R:\%AGENT_BUILDDIRECTORY:~3%"
     robocopy /MOVE /E /R:0 /COPYALL "%AGENT_BUILDDIRECTORY%" "R:\%AGENT_BUILDDIRECTORY:~3%"
+    dir /s /b "%AGENT_BUILDDIRECTORY%"
 
     IF EXIST "%AGENT_BUILDDIRECTORY%.old" ( rmdir /s /q "%AGENT_BUILDDIRECTORY%.old" )
     IF EXIST "%AGENT_BUILDDIRECTORY%" (
