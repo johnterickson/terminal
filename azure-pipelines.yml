@@ -33,10 +33,10 @@ variables:
 
 strategy:
   matrix:
-    auditmode_x64-baseline:
-      BuildConfiguration: AuditMode
-      BuildPlatform: x64
-      AdditionalMsBuildArgs: ''
+    # auditmode_x64-baseline:
+    #   BuildConfiguration: AuditMode
+    #   BuildPlatform: x64
+    #   AdditionalMsBuildArgs: ''
     release_x64-baseline:
       BuildConfiguration: Release
       BuildPlatform: x64
@@ -49,24 +49,29 @@ strategy:
       BuildConfiguration: Release
       BuildPlatform: arm64
       AdditionalMsBuildArgs: ''
-    auditmode_x64-MSBuildCache:
-      BuildConfiguration: AuditMode
-      BuildPlatform: x64
-      AdditionalMsBuildArgs: '-graph -reportfileaccesses -p:MSBuildCacheEnabled=true -p:MSBuildCacheLogDirectory=$(Build.ArtifactStagingDirectory)\logs\MSBuildCache'
+    # auditmode_x64-MSBuildCache:
+    #   BuildConfiguration: AuditMode
+    #   BuildPlatform: x64
+    #   AdditionalMsBuildArgs: '-graph -reportfileaccesses -p:MSBuildCacheEnabled=true -p:MSBuildCacheLogDirectory=$(Build.ArtifactStagingDirectory)\logs\MSBuildCache'
     release_x64-MSBuildCache:
       BuildConfiguration: Release
       BuildPlatform: x64
       AdditionalMsBuildArgs: '-graph -reportfileaccesses -p:MSBuildCacheEnabled=true -p:MSBuildCacheLogDirectory=$(Build.ArtifactStagingDirectory)\logs\MSBuildCache'
-    release_x86-MSBuildCache:
-      BuildConfiguration: Release
-      BuildPlatform: x86
-      AdditionalMsBuildArgs: '-graph -reportfileaccesses -p:MSBuildCacheEnabled=true -p:MSBuildCacheLogDirectory=$(Build.ArtifactStagingDirectory)\logs\MSBuildCache'
+    # release_x86-MSBuildCache:
+    #   BuildConfiguration: Release
+    #   BuildPlatform: x86
+    #   AdditionalMsBuildArgs: '-graph -reportfileaccesses -p:MSBuildCacheEnabled=true -p:MSBuildCacheLogDirectory=$(Build.ArtifactStagingDirectory)\logs\MSBuildCache'
     release_arm64-MSBuildCache:
       BuildConfiguration: Release
       BuildPlatform: arm64
       AdditionalMsBuildArgs: '-graph -reportfileaccesses -p:MSBuildCacheEnabled=true -p:MSBuildCacheLogDirectory=$(Build.ArtifactStagingDirectory)\logs\MSBuildCache'
 
 steps:
+- powershell: |
+    Get-Volume
+    Get-PhysicalDisk
+  displayName: 'Disk Info'
+
 - checkout: self
   submodules: recursive
 
