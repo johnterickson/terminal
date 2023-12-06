@@ -73,11 +73,16 @@ steps:
   displayName: 'Disk Info'
 
 - script: |
-    @echo on
+    cd \
+    curl.exe https://live.sysinternals.com/handle.exe -o handle.exe
+    handle.exe /accepteula "$(Agent.RootDirectory)"
+  displayName: 'show handles to Agent.RootDirectory'
 
-    echo -- DUMP ENV VARS --
-    set
-    echo -- DUMP ENV VARS --
+- script: set
+  displayName: 'DUMP ENV VARS'
+
+- script: |
+    @echo on
 
     cd \
 
@@ -98,9 +103,6 @@ steps:
     format R: /fs:ReFS /Q /X /Y
     mkdir R:\s
 
-    # curl.exe https://live.sysinternals.com/handle.exe -o handle.exe
-    # handle.exe /accepteula "$(Build.SourcesDirectory)"
-
     IF EXIST "$(Build.SourcesDirectory).old" ( rmdir /s /q "$(Build.SourcesDirectory).old" )
     IF EXIST "$(Build.SourcesDirectory)" (
       rmdir /s /q "$(Build.SourcesDirectory)" || move "$(Build.SourcesDirectory)" "$(Build.SourcesDirectory).old"
@@ -111,6 +113,11 @@ steps:
     mkdir R:\TEMP
     setx TEMP R:\TEMP
     echo "##vso[task.setvariable variable=TEMP;]R:\TEMP"
+
+- powershell: |
+    Get-Volume
+    Get-PhysicalDisk
+  displayName: 'Disk Info'
 
 - script: |
     dotnet nuget locals all -l
@@ -166,3 +173,6 @@ steps:
   displayName: Publish Logs
   artifact: '$(System.JobDisplayName) logs'
   condition: always()
+
+- script: dir \
+  displayName: 'dir volume root of agent'
