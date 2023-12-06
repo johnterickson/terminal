@@ -194,5 +194,6 @@ steps:
   artifact: '$(System.JobDisplayName) logs'
   condition: always()
 
-- script: dir \
-  displayName: 'dir volume root of agent'
+- script: |
+    for /F %I IN ('dir /s /b \MSBuildCache\*.blob') DO (fsutil file queryExtentsAndRefCounts "%I" )
+  displayName: 'check for CoW'
