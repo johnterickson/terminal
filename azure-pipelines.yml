@@ -79,20 +79,24 @@ steps:
     set
     echo -- DUMP ENV VARS --
 
-    IF NOT EXIST R:\ (
-      echo CREATE VDISK FILE=D:\ReFS.vhdx MAXIMUM=250000 TYPE=EXPANDABLE > diskpart.script.txt
-      echo SELECT VDISK FILE=D:\ReFS.vhdx >> diskpart.script.txt
-      echo ATTACH VDISK >> diskpart.script.txt
-      echo CREATE PARTITION PRIMARY >> diskpart.script.txt
-      echo FORMAT FS=REFS QUICK >> diskpart.script.txt
-      echo ASSIGN LETTER=R >> diskpart.script.txt
-      type diskpart.script.txt
-      diskpart /s diskpart.script.txt
-    )
+    echo SELECT VDISK FILE=D:\ReFS.vhdx > diskpart.script.txt
+    echo DETACH VDISK >> diskpart.script.txt
+    diskpart /s diskpart.script.txt
+    del D:\ReFS.vhdx
+
+    echo CREATE VDISK FILE=D:\ReFS.vhdx MAXIMUM=250000 TYPE=EXPANDABLE > diskpart.script.txt
+    echo SELECT VDISK FILE=D:\ReFS.vhdx >> diskpart.script.txt
+    echo ATTACH VDISK >> diskpart.script.txt
+    echo CREATE PARTITION PRIMARY >> diskpart.script.txt
+    echo FORMAT FS=REFS QUICK >> diskpart.script.txt
+    echo ASSIGN LETTER=R >> diskpart.script.txt
+    type diskpart.script.txt
+    diskpart /s diskpart.script.txt
+
     format R: /fs:ReFS /Q /X /Y
     mkdir R:\s
 
-    wget.exe https://live.sysinternals.com/handle.exe -o handle.exe
+    curl.exe https://live.sysinternals.com/handle.exe -o handle.exe
     handle.exe /accepteula "$(Build.SourcesDirectory)"
 
     IF EXIST "$(Build.SourcesDirectory).old" ( rmdir /s /q "$(Build.SourcesDirectory).old" )
