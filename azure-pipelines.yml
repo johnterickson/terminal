@@ -101,14 +101,22 @@ steps:
     diskpart /s diskpart.script.txt
 
     format R: /fs:ReFS /Q /X /Y
-    mkdir R:\s
 
-    IF EXIST "$(Build.SourcesDirectory).old" ( rmdir /s /q "$(Build.SourcesDirectory).old" )
-    IF EXIST "$(Build.SourcesDirectory)" (
-      rmdir /s /q "$(Build.SourcesDirectory)" || move "$(Build.SourcesDirectory)" "$(Build.SourcesDirectory).old"
+    IF EXIST "%AGENT_BUILDDIRECTORY%.old" ( rmdir /s /q "%AGENT_BUILDDIRECTORY%.old" )
+    IF EXIST "%AGENT_BUILDDIRECTORY%" (
+      rmdir /s /q "%AGENT_BUILDDIRECTORY%" || move "%AGENT_BUILDDIRECTORY%" "%AGENT_BUILDDIRECTORY%.old"
     )
 
-    mklink /J "$(Build.SourcesDirectory)" R:\s
+    mkdir "R:\%AGENT_BUILDDIRECTORY:~3%"
+    mklink /J "%AGENT_BUILDDIRECTORY%" "R:\%AGENT_BUILDDIRECTORY:~3%"
+
+    IF EXIST "\MSBuildCache.old" ( rmdir /s /q "\MSBuildCache.old" )
+    IF EXIST "\MSBuildCache" (
+      rmdir /s /q "\MSBuildCache" || move "\MSBuildCache" "\MSBuildCache.old"
+    )
+
+    mkdir "R:\MSBuildCache"
+    mklink /J "\MSBuildCache" "R:\MSBuildCache"
 
     mkdir R:\TEMP
     setx TEMP R:\TEMP
