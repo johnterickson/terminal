@@ -84,13 +84,16 @@ steps:
       type diskpart.script.txt
       diskpart /s diskpart.script.txt
     )
-    format R: /fs:ReFS /Q /X
+    format R: /fs:ReFS /Q /X /Y
     mkdir R:\s
+
+    handle "$(Build.SourcesDirectory)"
+    
     IF EXIST "$(Build.SourcesDirectory).old" ( rmdir /s /q "$(Build.SourcesDirectory).old" )
     IF EXIST "$(Build.SourcesDirectory)" (
       rmdir /s /q "$(Build.SourcesDirectory)" || move "$(Build.SourcesDirectory)" "$(Build.SourcesDirectory).old"
     )
-    
+
     mklink /J "$(Build.SourcesDirectory)" R:\s
 
     mkdir R:\TEMP
