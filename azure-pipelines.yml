@@ -79,6 +79,8 @@ steps:
     set
     echo -- DUMP ENV VARS --
 
+    cd \
+
     echo SELECT VDISK FILE=D:\ReFS.vhdx > diskpart.script.txt
     echo DETACH VDISK >> diskpart.script.txt
     diskpart /s diskpart.script.txt
@@ -96,8 +98,8 @@ steps:
     format R: /fs:ReFS /Q /X /Y
     mkdir R:\s
 
-    curl.exe https://live.sysinternals.com/handle.exe -o handle.exe
-    handle.exe /accepteula "$(Build.SourcesDirectory)"
+    # curl.exe https://live.sysinternals.com/handle.exe -o handle.exe
+    # handle.exe /accepteula "$(Build.SourcesDirectory)"
 
     IF EXIST "$(Build.SourcesDirectory).old" ( rmdir /s /q "$(Build.SourcesDirectory).old" )
     IF EXIST "$(Build.SourcesDirectory)" (
