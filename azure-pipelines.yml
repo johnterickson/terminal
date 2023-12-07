@@ -196,7 +196,8 @@ steps:
   condition: always()
 
 - script: |
+    dir \
     IF EXIST \MSBuildCache\ (
-      for /F %%I IN ('dir /s /b \MSBuildCache\*.blob') DO (fsutil file queryExtentsAndRefCounts "%%I" )
+      for /F %%I IN ('dir /s /b \MSBuildCache\*.blob') DO (echo %%I && fsutil file queryExtentsAndRefCounts "%%I" )
     )
   displayName: 'check for CoW'
