@@ -21,6 +21,10 @@
       the cache to use copies instead of hardlinks when pulling from cache.
     -->
     <MSBuildCacheIdenticalDuplicateOutputPatterns>$(MSBuildCacheIdenticalDuplicateOutputPatterns);bin\**</MSBuildCacheIdenticalDuplicateOutputPatterns>
+    <!-- 
+      This repo also copies around this source file as a pre-build step
+    -->
+    <MSBuildCacheIdenticalDuplicateOutputPatterns>$(MSBuildCacheIdenticalDuplicateOutputPatterns);**\TerminalApp.Unit.Tests.manifest</MSBuildCacheIdenticalDuplicateOutputPatterns>
 
     <!-- version of MSBuildCache is not part of the cache key -->
     <PackagesConfigFile>$(MSBuildThisFileDirectory)\dep\nuget\packages.config</PackagesConfigFile>
