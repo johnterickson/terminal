@@ -21,6 +21,14 @@
       the cache to use copies instead of hardlinks when pulling from cache.
     -->
     <MSBuildCacheIdenticalDuplicateOutputPatterns>$(MSBuildCacheIdenticalDuplicateOutputPatterns);bin\**</MSBuildCacheIdenticalDuplicateOutputPatterns>
+
+    <!-- 
+      AddPriPayloadFilesToCopyToOutputDirectoryItems (unncessarily?) tries to write to the obj directory.
+"Q:\src\terminal\src\cascadia\TerminalApp\TerminalAppLib.vcxproj" (GetCopyToOutputDirectoryItems target) (3:4) ->
+  EXPANDPRICONTENT : error : PRI262: 0xdef0007a - Access denied while processing Q:\src\terminal\obj\x64\Debug\TerminalAppLib\Microsoft.Terminal.TerminalConnection.pri.xml
+    -->
+    <MSBuildCacheIdenticalDuplicateOutputPatterns>$(MSBuildCacheIdenticalDuplicateOutputPatterns);obj\**</MSBuildCacheIdenticalDuplicateOutputPatterns>
+
     <!-- 
       This repo also copies around this source file as a pre-build step
     -->
