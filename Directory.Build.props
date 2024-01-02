@@ -3,7 +3,7 @@
   <Target Name="Test">
     <Exec 
       Condition=" $([System.String]::new($(TargetName)).ToLower().Contains('unit.test')) "
-      Command="powershell $(SolutionDir)build\scripts\Run-Tests.ps1 -MatchPattern '*$(TargetName)*.dll' -Platform '$(Platform)' -Configuration '$(Configuration)' -LogPath '$(OutDir)\Logs'"
+      Command="powershell $(SolutionDir)build\scripts\Run-Tests.ps1 -MatchPattern '*$(TargetName)*.dll' -Platform '$(Platform)' -Configuration '$(Configuration)' -LogPath '$(OutDir)\Logs\Tests\$(TargetName).log'"
       WorkingDirectory="$(SolutionDir)"
     />
   </Target>
