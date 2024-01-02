@@ -1,4 +1,13 @@
 <Project>
+  <!-- Tests in build-->
+  <Target Name="Test">
+    <Exec 
+      Condition=" $([System.String]::new($(TargetName)).ToLower().Contains('unit.test')) "
+      Command="powershell $(SolutionDir)build\scripts\Run-Tests.ps1 -MatchPattern '*$(TargetName)*.dll' -Platform '$(Platform)' -Configuration '$(Configuration)' -LogPath '$(OutDir)\Logs'"
+      WorkingDirectory="$(SolutionDir)"
+    />
+  </Target>
+
   <!-- MsBuildCache -->
   <PropertyGroup>
     <!-- Off by default -->
@@ -17,22 +26,9 @@
     <MSBuildCacheCacheUniverse Condition="'$(MSBuildCacheCacheUniverse)' == ''">202310210737</MSBuildCacheCacheUniverse>
 
     <!-- 
-      This repo uses a common output directory with many projects writing duplicate outputs. Allow everything, but note this costs some performance in the form of requiring
-      the cache to use copies instead of hardlinks when pulling from cache.
+      This repo writes everywhere during the build - bin, src, obj, etc. Just allowlist all of it. :(
     -->
-    <MSBuildCacheIdenticalDuplicateOutputPatterns>$(MSBuildCacheIdenticalDuplicateOutputPatterns);bin\**</MSBuildCacheIdenticalDuplicateOutputPatterns>
-
-    <!-- 
-      AddPriPayloadFilesToCopyToOutputDirectoryItems (unncessarily?) tries to write to the obj directory.
-"Q:\src\terminal\src\cascadia\TerminalApp\TerminalAppLib.vcxproj" (GetCopyToOutputDirectoryItems target) (3:4) ->
-  EXPANDPRICONTENT : error : PRI262: 0xdef0007a - Access denied while processing Q:\src\terminal\obj\x64\Debug\TerminalAppLib\Microsoft.Terminal.TerminalConnection.pri.xml
-    -->
-    <MSBuildCacheIdenticalDuplicateOutputPatterns>$(MSBuildCacheIdenticalDuplicateOutputPatterns);obj\**</MSBuildCacheIdenticalDuplicateOutputPatterns>
-
-    <!-- 
-      This repo also copies around this source file as a pre-build step
-    -->
-    <MSBuildCacheIdenticalDuplicateOutputPatterns>$(MSBuildCacheIdenticalDuplicateOutputPatterns);**\TerminalApp.Unit.Tests.manifest</MSBuildCacheIdenticalDuplicateOutputPatterns>
+    <MSBuildCacheIdenticalDuplicateOutputPatterns>$(MSBuildCacheIdenticalDuplicateOutputPatterns);**</MSBuildCacheIdenticalDuplicateOutputPatterns>
 
     <!-- version of MSBuildCache is not part of the cache key -->
     <PackagesConfigFile>$(MSBuildThisFileDirectory)\dep\nuget\packages.config</PackagesConfigFile>
