@@ -25,6 +25,10 @@
     <!-- Change this to bust the cache -->
     <MSBuildCacheCacheUniverse Condition="'$(MSBuildCacheCacheUniverse)' == ''">202310210737</MSBuildCacheCacheUniverse>
 
+
+    <!-- default cache size of 100GB is too small, so double it. -->
+    <MSBuildCacheLocalCacheSizeInMegabytes>204800</MSBuildCacheLocalCacheSizeInMegabytes>
+
     <!-- 
       This repo writes everywhere during the build - bin, src, obj, etc. Just allowlist all of it. :(
     -->
