@@ -2,6 +2,11 @@ set TEMP=%CD:~0,3%TEMP
 set TMP=%TEMP%
 mkdir %TEMP%
 
+rmdir /s /q ..\MSBuildCacheLogs
+move MSBuildCacheLogs ..
+
+move /Y msbuild.binlog ..
+
 IF "%PLATFORM%"=="" (
     set PLATFORM=x64
 )
@@ -17,5 +22,5 @@ IF "%SYSTEM_TEAMFOUNDATIONCOLLECTIONURI%"=="https://dev.azure.com/artifactsandbo
 call tools\razzle.cmd
 set MSBUILDDEBUGONSTART=%MSBUILDDEBUGONSTART_ORIGINAL%
 echo MSBUILDDEBUGONSTART=%MSBUILDDEBUGONSTART%
-set EXTRA_MSBUILD_ARGS=/graph /restore:false /nr:false /reportfileaccesses /bl %*
+set EXTRA_MSBUILD_ARGS=/graph /restore:false /nr:false /reportfileaccesses /bl /p:MSBuildCacheEnabled=true /t:Build;Test %*
 call bcz.cmd no_clean
