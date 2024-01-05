@@ -155,6 +155,7 @@ steps:
     echo ##vso[task.setvariable variable=MSBuildCacheLocalCacheRootPath;]R:\MSBuildCache
 
     pushd %COW_TEST_DIR%
+    mkdir %MSBuildCacheLocalCacheRootPath%
     echo test > %MSBuildCacheLocalCacheRootPath%\test.txt
     dotnet run -- "%MSBuildCacheLocalCacheRootPath%\test.txt" "%MSBuildCacheLocalCacheRootPath%\test.txt.cloned"
     dotnet run -- "%MSBuildCacheLocalCacheRootPath%\test.txt" "%AGENT_BUILDDIRECTORY%\test.txt.cloned"
