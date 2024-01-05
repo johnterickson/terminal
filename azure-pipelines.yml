@@ -84,12 +84,12 @@ steps:
 - script: |
     @echo on
 
-    pushd %TEMP%
-    git clone https://github.com/johnterickson/cow_test.git
-    cd cow_test
-    set COW_TEST_DIR=%CD%
-    dotnet build
-    popd
+    # pushd %TEMP%
+    # git clone https://github.com/johnterickson/cow_test.git
+    # cd cow_test
+    # set COW_TEST_DIR=%CD%
+    # dotnet build
+    # popd
 
     echo SELECT VDISK FILE=%CD%ReFS.vhdx > diskpart.script.txt
     echo DETACH VDISK >> diskpart.script.txt
@@ -109,12 +109,12 @@ steps:
 
     format R: /fs:ReFS /Q /X /Y /DevDrv || format R: /fs:ReFS /Q /X /Y
 
-    pushd %COW_TEST_DIR%
-    echo test > r:\test.txt
-    dotnet run -- "r:\test.txt" "r:\test.txt.cloned"
-    del r:\test.txt
-    del r:\test.txt.cloned
-    popd
+    # pushd %COW_TEST_DIR%
+    # echo test > r:\test.txt
+    # dotnet run -- "r:\test.txt" "r:\test.txt.cloned"
+    # del r:\test.txt
+    # del r:\test.txt.cloned
+    # popd
 
     # dir /s /b "%AGENT_BUILDDIRECTORY%\*"
     mkdir "R:\%AGENT_BUILDDIRECTORY:~3%"
@@ -134,12 +134,12 @@ steps:
     diskpart /s diskpart.script.txt
     del diskpart.script.txt
 
-    pushd %COW_TEST_DIR%
-    echo test > %AGENT_BUILDDIRECTORY%\test.txt
-    dotnet run -- "%AGENT_BUILDDIRECTORY%\test.txt" "%AGENT_BUILDDIRECTORY%\test.txt.cloned"
-    del %AGENT_BUILDDIRECTORY%\test.txt
-    del %AGENT_BUILDDIRECTORY%\test.txt.cloned
-    popd
+    # pushd %COW_TEST_DIR%
+    # echo test > %AGENT_BUILDDIRECTORY%\test.txt
+    # dotnet run -- "%AGENT_BUILDDIRECTORY%\test.txt" "%AGENT_BUILDDIRECTORY%\test.txt.cloned"
+    # del %AGENT_BUILDDIRECTORY%\test.txt
+    # del %AGENT_BUILDDIRECTORY%\test.txt.cloned
+    # popd
 
     mkdir "$(Build.ArtifactStagingDirectory)"
     mkdir "$(Build.BinariesDirectory)"
@@ -154,18 +154,17 @@ steps:
     SET MSBuildCacheLocalCacheRootPath=R:\MSBuildCache
     echo ##vso[task.setvariable variable=MSBuildCacheLocalCacheRootPath;]R:\MSBuildCache
 
-    pushd %COW_TEST_DIR%
-    mkdir %MSBuildCacheLocalCacheRootPath%
-    echo test > %MSBuildCacheLocalCacheRootPath%\test.txt
-    dotnet run -- "%MSBuildCacheLocalCacheRootPath%\test.txt" "%MSBuildCacheLocalCacheRootPath%\test.txt.cloned"
-    dotnet run -- "%MSBuildCacheLocalCacheRootPath%\test.txt" "%AGENT_BUILDDIRECTORY%\test.txt.cloned"
-    del %MSBuildCacheLocalCacheRootPath%\test.txt
-    del %MSBuildCacheLocalCacheRootPath%\test.txt.cloned
-    del %AGENT_BUILDDIRECTORY%\test.txt.cloned
-    popd
+    # pushd %COW_TEST_DIR%
+    # mkdir %MSBuildCacheLocalCacheRootPath%
+    # echo test > %MSBuildCacheLocalCacheRootPath%\test.txt
+    # dotnet run -- "%MSBuildCacheLocalCacheRootPath%\test.txt" "%MSBuildCacheLocalCacheRootPath%\test.txt.cloned"
+    # dotnet run -- "%MSBuildCacheLocalCacheRootPath%\test.txt" "%AGENT_BUILDDIRECTORY%\test.txt.cloned"
+    # del %MSBuildCacheLocalCacheRootPath%\test.txt
+    # del %MSBuildCacheLocalCacheRootPath%\test.txt.cloned
+    # del %AGENT_BUILDDIRECTORY%\test.txt.cloned
+    # popd
 
     mkdir R:\TEMP
-    setx TEMP R:\TEMP
     echo ##vso[task.setvariable variable=TEMP;]R:\TEMP
   displayName: 'Remap AGENT_BUILDDIRECTORY to a ReFS (DevDrv if available) volume'
 
@@ -230,10 +229,10 @@ steps:
   artifact: '$(System.JobDisplayName) logs'
   condition: always()
 
-- script: |
-    @echo on
-    IF EXIST R:\MSBuildCache\ (
-      for /F %%I IN ('dir /s /b R:\MSBuildCache\*.blob') DO (echo %%I && fsutil file queryExtentsAndRefCounts "%%I" )
-    )
-    dir R:\
-  displayName: 'check for CoW'
+# - script: |
+#     @echo on
+#     IF EXIST R:\MSBuildCache\ (
+#       for /F %%I IN ('dir /s /b R:\MSBuildCache\*.blob') DO (echo %%I && fsutil file queryExtentsAndRefCounts "%%I" )
+#     )
+#     dir R:\
+#   displayName: 'check for CoW'
