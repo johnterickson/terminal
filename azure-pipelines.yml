@@ -41,10 +41,10 @@ strategy:
       BuildConfiguration: Release
       BuildPlatform: x64
       AdditionalMsBuildArgs: ''
-    release_x86-baseline:
-      BuildConfiguration: Release
-      BuildPlatform: x86
-      AdditionalMsBuildArgs: ''
+    # release_x86-baseline:
+    #   BuildConfiguration: Release
+    #   BuildPlatform: x86
+    #   AdditionalMsBuildArgs: ''
     release_arm64-baseline:
       BuildConfiguration: Release
       BuildPlatform: arm64
