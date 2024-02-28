@@ -37,6 +37,8 @@
     <!-- version of MSBuildCache is not part of the cache key -->
     <PackagesConfigFile>$(MSBuildThisFileDirectory)\dep\nuget\packages.config</PackagesConfigFile>
     <MSBuildCacheIgnoredInputPatterns>$(MSBuildCacheIgnoredInputPatterns);$(PackagesConfigFile)</MSBuildCacheIgnoredInputPatterns>
+    <MSBuildCacheIgnoredInputPatterns>$(MSBuildCacheIgnoredInputPatterns);**\VSApplicationInsights\**</MSBuildCacheIgnoredInputPatterns>
+    <MSBuildCacheIgnoredInputPatterns>$(MSBuildCacheIgnoredInputPatterns);**\MSBuild\Microsoft\VisualStudio\**\ApplicationInsights.config</MSBuildCacheIgnoredInputPatterns>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(MSBuildCacheEnabled)' == 'true' and '$(MSBuildCachePackageRoot)' == ''">
