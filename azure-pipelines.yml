@@ -16,7 +16,7 @@ schedules:
     - main
     
 pool:
-  name: 'MemoBuild-Pool'
+  name: 'MemoBuild-Pool-WCUS'
 
 variables:
   NUGET_PACKAGES: D:\.nuget\packages
