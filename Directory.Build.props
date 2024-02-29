@@ -37,8 +37,17 @@
     <!-- version of MSBuildCache is not part of the cache key -->
     <PackagesConfigFile>$(MSBuildThisFileDirectory)\dep\nuget\packages.config</PackagesConfigFile>
     <MSBuildCacheIgnoredInputPatterns>$(MSBuildCacheIgnoredInputPatterns);$(PackagesConfigFile)</MSBuildCacheIgnoredInputPatterns>
-    <MSBuildCacheIgnoredInputPatterns>$(MSBuildCacheIgnoredInputPatterns);**\VSApplicationInsights\**</MSBuildCacheIgnoredInputPatterns>
-    <MSBuildCacheIgnoredInputPatterns>$(MSBuildCacheIgnoredInputPatterns);**\MSBuild\Microsoft\VisualStudio\**\ApplicationInsights.config</MSBuildCacheIgnoredInputPatterns>
+
+    <!--
+      Visual Studio telemetry reads various ApplicationInsights.config files and other files after the project is finished, likely in a detached process.
+      This is acceptable and should not impact cache correctness.
+    -->
+    <MSBuildCacheAllowFileAccessAfterProjectFinishFilePatterns>
+      $(MSBuildCacheAllowFileAccessAfterProjectFinishFilePatterns);
+      \**\ApplicationInsights.config;
+      $(LocalAppData)\Microsoft\VSApplicationInsights\**;
+      $(LocalAppData)\Microsoft\Windows\INetCache\**;
+    </MSBuildCacheAllowFileAccessAfterProjectFinishFilePatterns>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(MSBuildCacheEnabled)' == 'true' and '$(MSBuildCachePackageRoot)' == ''">
