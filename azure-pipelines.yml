@@ -70,9 +70,9 @@ strategy:
       MSBuildCacheEnabled: 'true'
 
 steps:
-- script: |
-    tracert -h 5 -w 1000 artifacts.dev.azure.com
-    ping artifacts.dev.azure.com
+# - script: |
+#     tracert -h 5 -w 1000 artifacts.dev.azure.com
+#     ping artifacts.dev.azure.com
   
 - powershell: |
     Set-MpPreference -DisableTDTFeature $true
