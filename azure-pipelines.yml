@@ -216,6 +216,7 @@ steps:
     rmdir /s /q "$(Build.ArtifactStagingDirectory)\logs"
     rmdir /s /q "\MSBuildCache"
     git clean -xdf || git clean -xdf
+  displayName: 'Clean up'
 
 - template: .\build\pipelines\templates-v2\steps-restore-nuget.yml
 - task: VSBuild@1
@@ -240,8 +241,8 @@ steps:
 
 - script: |
     rmdir /s /q "$(Build.ArtifactStagingDirectory)\logs"
-    rmdir /s /q "\MSBuildCache"
     git clean -xdf || git clean -xdf
+  displayName: 'Clean up, but keep local cache'
 
 - template: .\build\pipelines\templates-v2\steps-restore-nuget.yml
 - task: VSBuild@1
