@@ -34,22 +34,22 @@ variables:
 
 strategy:
   matrix:
-    # auditmode_x64-baseline:
-    #   BuildConfiguration: AuditMode
+    # # auditmode_x64-baseline:
+    # #   BuildConfiguration: AuditMode
+    # #   BuildPlatform: x64
+    # #   AdditionalMsBuildArgs: ''
+    # release_x64-baseline:
+    #   BuildConfiguration: Release
     #   BuildPlatform: x64
     #   AdditionalMsBuildArgs: ''
-    release_x64-baseline:
-      BuildConfiguration: Release
-      BuildPlatform: x64
-      AdditionalMsBuildArgs: ''
-    # release_x86-baseline:
+    # # release_x86-baseline:
+    # #   BuildConfiguration: Release
+    # #   BuildPlatform: x86
+    # #   AdditionalMsBuildArgs: ''
+    # release_arm64-baseline:
     #   BuildConfiguration: Release
-    #   BuildPlatform: x86
+    #   BuildPlatform: arm64
     #   AdditionalMsBuildArgs: ''
-    release_arm64-baseline:
-      BuildConfiguration: Release
-      BuildPlatform: arm64
-      AdditionalMsBuildArgs: ''
     # auditmode_x64-MSBuildCache:
     #   BuildConfiguration: AuditMode
     #   BuildPlatform: x64
@@ -249,6 +249,12 @@ steps:
     git clean -xdf || git clean -xdf
   displayName: 'Clean up, but keep local cache'
 
+- task: DiagnosticsTask@0
+  displayName: 'Start PerfView'
+  inputs:
+    operation: start
+    collectors: |
+      - perfview: /ClrEvents=JITSymbols /KernelEvents=Process+Thread+ImageLoad+Profile+DiskIO+FileIO /CPUSampleMSec:1000
 
 - script: |
     pktmon filter remove
