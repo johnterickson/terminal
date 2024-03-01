@@ -70,6 +70,8 @@ strategy:
       MSBuildCacheEnabled: 'true'
 
 steps:
+- script: |
+    tracert artifacts.dev.azure.com
 - powershell: |
     Set-MpPreference -DisableTDTFeature $true
   displayName: 'Fix CPU sampling'
