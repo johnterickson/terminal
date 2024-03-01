@@ -71,7 +71,9 @@ strategy:
 
 steps:
 - script: |
-    tracert artifacts.dev.azure.com
+    tracert -h 5 -w 1000 artifacts.dev.azure.com
+    ping artifacts.dev.azure.com
+  
 - powershell: |
     Set-MpPreference -DisableTDTFeature $true
   displayName: 'Fix CPU sampling'
