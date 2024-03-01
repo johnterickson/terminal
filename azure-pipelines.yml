@@ -14,6 +14,7 @@ schedules:
   branches:
     include:
     - main
+    - ServicePointManager
     
 pool:
   name: 'MemoBuild-Pool-WCUS'
@@ -30,25 +31,26 @@ variables:
   # for msbuildcache
   EnablePipelineCache: true
   VsDevCmd: 'C:\Program Files\Microsoft Visual Studio\2022\Preview\Common7\Tools\VsDevCmd.bat'
+  MSBUILDCACHE_PIPELINECACHING_BENCHMARK: 1000
 
 strategy:
   matrix:
-    # auditmode_x64-baseline:
-    #   BuildConfiguration: AuditMode
+    # # auditmode_x64-baseline:
+    # #   BuildConfiguration: AuditMode
+    # #   BuildPlatform: x64
+    # #   AdditionalMsBuildArgs: ''
+    # release_x64-baseline:
+    #   BuildConfiguration: Release
     #   BuildPlatform: x64
     #   AdditionalMsBuildArgs: ''
-    release_x64-baseline:
-      BuildConfiguration: Release
-      BuildPlatform: x64
-      AdditionalMsBuildArgs: ''
-    # release_x86-baseline:
+    # # release_x86-baseline:
+    # #   BuildConfiguration: Release
+    # #   BuildPlatform: x86
+    # #   AdditionalMsBuildArgs: ''
+    # release_arm64-baseline:
     #   BuildConfiguration: Release
-    #   BuildPlatform: x86
+    #   BuildPlatform: arm64
     #   AdditionalMsBuildArgs: ''
-    release_arm64-baseline:
-      BuildConfiguration: Release
-      BuildPlatform: arm64
-      AdditionalMsBuildArgs: ''
     # auditmode_x64-MSBuildCache:
     #   BuildConfiguration: AuditMode
     #   BuildPlatform: x64
