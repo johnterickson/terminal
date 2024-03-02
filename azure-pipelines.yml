@@ -241,10 +241,24 @@ steps:
   artifact: '$(System.JobDisplayName) logs'
   condition: always()
 
+
 - script: |
     rmdir /s /q "$(Build.ArtifactStagingDirectory)\logs"
     git clean -xdf || git clean -xdf
   displayName: 'Clean up, but keep local cache'
+
+- task: DiagnosticsTask@0
+  displayName: 'Start PerfView'
+  inputs:
+    operation: start
+    collectors: |
+      - perfview: /ClrEvents=JITSymbols /KernelEvents=Process+Thread+ImageLoad+Profile+DiskIO+FileIO /CPUSampleMSec:1000
+
+- script: |
+    pktmon filter remove
+    pktmon filter add AFD -i 13.107.42.20
+    mkdir "$(Build.ArtifactStagingDirectory)\logs"
+    pktmon start --capture --file-name "$(Build.ArtifactStagingDirectory)\logs\pktmon.etl" --log-mode multi-file
 
 - template: .\build\pipelines\templates-v2\steps-restore-nuget.yml
 - task: VSBuild@1
@@ -262,6 +276,9 @@ steps:
     maximumCpuCount: true
   env:
     SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+- script: |
+    pktmon counters
+    pktmon stop
 - publish: $(Build.ArtifactStagingDirectory)\logs
   displayName: Publish Logs
   artifact: '$(System.JobDisplayName) logs 2'
