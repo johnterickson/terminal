@@ -286,6 +286,9 @@ steps:
 - script: |
     pktmon counters
     pktmon stop
+- script: |
+    taskkill /f /im msbuild.exe 2>NUL
+    echo msbuild stopped
 - powershell: |
     Get-Process -Name procdump | Wait-Process -Timeout 120
     Get-Process -Name procdump | Stop-Process
