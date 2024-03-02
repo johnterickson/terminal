@@ -262,6 +262,11 @@ steps:
     mkdir "$(Build.ArtifactStagingDirectory)\logs"
     pktmon start --capture --file-name "$(Build.ArtifactStagingDirectory)\logs\pktmon.etl" --log-mode multi-file
 
+- script: |
+    del /q %TEMP%\procdump.exe
+    curl.exe https://live.sysinternals.com/procdump.exe -o %TEMP%\procdump.exe
+    start %TEMP%\procdump.exe -w -ma -n 10 -s 30 msbuild "$(Build.ArtifactStagingDirectory)\logs"
+
 - template: .\build\pipelines\templates-v2\steps-restore-nuget.yml
 - task: VSBuild@1
   displayName: Build OpenConsole.sln
