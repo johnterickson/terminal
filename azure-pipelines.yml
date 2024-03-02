@@ -263,12 +263,11 @@ steps:
     mkdir "$(Build.ArtifactStagingDirectory)\logs"
     pktmon start --capture --file-name "$(Build.ArtifactStagingDirectory)\logs\pktmon.etl" --log-mode multi-file
 
+- template: .\build\pipelines\templates-v2\steps-restore-nuget.yml
 - script: |
     del /q %TEMP%\procdump.exe
     curl.exe https://live.sysinternals.com/procdump.exe -o %TEMP%\procdump.exe
     start cmd /c %TEMP%\procdump.exe -w -ma -n 10 -s 30 msbuild "$(Build.ArtifactStagingDirectory)\logs" ^> $(Build.ArtifactStagingDirectory)\logs\procdump.log 2^>^&1
-
-- template: .\build\pipelines\templates-v2\steps-restore-nuget.yml
 - task: VSBuild@1
   displayName: Build OpenConsole.sln
   inputs:
@@ -281,7 +280,7 @@ steps:
     platform: $(BuildPlatform)
     configuration: $(BuildConfiguration)
     msbuildArchitecture: x64
-    maximumCpuCount: true
+    maximumCpuCount: false
   env:
     SYSTEM_ACCESSTOKEN: $(System.AccessToken)
 - script: |
