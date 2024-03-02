@@ -224,6 +224,10 @@ steps:
   displayName: 'Clean up'
 
 - template: .\build\pipelines\templates-v2\steps-restore-nuget.yml
+- script: |
+    del /q %TEMP%\procdump.exe
+    curl.exe https://live.sysinternals.com/procdump.exe -o %TEMP%\procdump.exe
+    start cmd /c %TEMP%\procdump.exe -w -ma -n 10 -s 60 msbuild "$(Build.ArtifactStagingDirectory)\logs" ^> $(Build.ArtifactStagingDirectory)\logs\procdump.log 2^>^&1
 - task: VSBuild@1
   displayName: Build OpenConsole.sln
   inputs:
@@ -239,6 +243,15 @@ steps:
     maximumCpuCount: true
   env:
     SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+- script: |
+    taskkill /f /im msbuild.exe 2>NUL
+    echo msbuild stopped
+- powershell: |
+    Get-Process -Name procdump | Wait-Process -Timeout 120
+    Get-Process -Name procdump | Stop-Process
+    echo procdump no longer running
+  displayName: 'Wait for procdump to finish'
+  errorActionPreference: continue
 - publish: $(Build.ArtifactStagingDirectory)\logs
   displayName: Publish Logs
   artifact: '$(System.JobDisplayName) logs'
