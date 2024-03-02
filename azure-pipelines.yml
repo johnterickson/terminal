@@ -288,6 +288,13 @@ steps:
 - script: |
     pktmon counters
     pktmon stop
+- powershell: |
+    Get-Process -Name procdump | Wait-Process -Timeout 120
+    Get-Process -Name procdump | Stop-Process
+    echo procdump no longer running
+  displayName: 'Wait for procdump to finish'
+  errorActionPreference: continue
+  
 - publish: $(Build.ArtifactStagingDirectory)\logs
   displayName: Publish Logs
   artifact: '$(System.JobDisplayName) logs 2'
