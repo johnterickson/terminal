@@ -248,7 +248,7 @@ steps:
     echo msbuild stopped
     exit /b 0
 - powershell: |
-    Get-Process -Name procdump | Wait-Process -Timeout 120
+    Get-Process -Name procdump | Wait-Process -Timeout 300
     Get-Process -Name procdump | Stop-Process
     echo procdump no longer running
   displayName: 'Wait for procdump to finish'
