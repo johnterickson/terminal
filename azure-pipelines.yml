@@ -128,7 +128,7 @@ steps:
     # popd
 
     # dir /s /b "%AGENT_BUILDDIRECTORY%\*"
-    mkdir "R:\%AGENT_BUILDDIRECTORY:~3%"
+    # mkdir "R:\%AGENT_BUILDDIRECTORY:~3%"
     # robocopy /MOVE /E /R:0 /COPYALL "%AGENT_BUILDDIRECTORY%" "R:" *
     # dir /s /b "%AGENT_BUILDDIRECTORY%\*"
 
@@ -191,6 +191,13 @@ steps:
 - checkout: self
   submodules: recursive
 
+- script: |
+    cd /d "R:\""
+    dir
+    cd s
+    dir
+  displayName: 'Show ReFS volume'
+
 # set up env (vs preview)
 - script: |
    cd %TEMP%
@@ -224,25 +231,33 @@ steps:
   displayName: 'Clean up'
 
 - template: .\build\pipelines\templates-v2\steps-restore-nuget.yml
+# - script: |
+#     del /q %TEMP%\procdump.exe
+#     curl.exe https://live.sysinternals.com/procdump.exe -o %TEMP%\procdump.exe
+#     start cmd /c %TEMP%\procdump.exe -w -ma -n 10 -s 60 msbuild "$(Build.ArtifactStagingDirectory)\logs" ^> $(Build.ArtifactStagingDirectory)\logs\procdump.log 2^>^&1
 - script: |
-    del /q %TEMP%\procdump.exe
-    curl.exe https://live.sysinternals.com/procdump.exe -o %TEMP%\procdump.exe
-    start cmd /c %TEMP%\procdump.exe -w -ma -n 10 -s 60 msbuild "$(Build.ArtifactStagingDirectory)\logs" ^> $(Build.ArtifactStagingDirectory)\logs\procdump.log 2^>^&1
-- task: VSBuild@1
-  displayName: Build OpenConsole.sln
-  inputs:
-    solution: 'OpenConsole.sln'
-    msbuildArgs: >-
-      /p:WindowsTerminalOfficialBuild=true;WindowsTerminalBranding=Dev;PGOBuildMode=None
-      /bl:$(Build.ArtifactStagingDirectory)\logs\msbuild.binlog
-      /ds:false
-      $(AdditionalMsBuildArgs)
-    platform: $(BuildPlatform)
-    configuration: $(BuildConfiguration)
-    msbuildArchitecture: x64
-    maximumCpuCount: true
+    call "$(VsDevCmd)"
+    cd /d R:\s
+    msbuild /p:WindowsTerminalOfficialBuild=true;WindowsTerminalBranding=Dev;PGOBuildMode=None /bl:$(Build.ArtifactStagingDirectory)\logs\msbuild.binlog /ds:false /p:Platform=$(BuildPlatform) /p:Configuration=$(BuildConfiguration) /m $(AdditionalMsBuildArgs) OpenConsole.sln
   env:
     SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+
+# - task: VSBuild@1
+#   displayName: Build OpenConsole.sln
+#   inputs:
+#     solution: 'OpenConsole.sln'
+#     msbuildArgs: >-
+#       /p:WindowsTerminalOfficialBuild=true;WindowsTerminalBranding=Dev;PGOBuildMode=None
+#       /bl:$(Build.ArtifactStagingDirectory)\logs\msbuild.binlog
+#       /ds:false
+#       $(AdditionalMsBuildArgs)
+#     platform: $(BuildPlatform)
+#     configuration: $(BuildConfiguration)
+#     msbuildArchitecture: x64
+#     maximumCpuCount: true
+#   env:
+#     SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+
 - script: |
     taskkill /f /im msbuild.exe 2>NUL
     echo msbuild stopped
@@ -282,6 +297,7 @@ steps:
     del /q %TEMP%\procdump.exe
     curl.exe https://live.sysinternals.com/procdump.exe -o %TEMP%\procdump.exe
     start cmd /c %TEMP%\procdump.exe -w -ma -n 10 -s 30 msbuild "$(Build.ArtifactStagingDirectory)\logs" ^> $(Build.ArtifactStagingDirectory)\logs\procdump.log 2^>^&1
+
 - task: VSBuild@1
   displayName: Build OpenConsole.sln
   inputs:
