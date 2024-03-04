@@ -95,17 +95,21 @@ steps:
 - script: |
     @echo on
 
-    # pushd %TEMP%
-    # git clone https://github.com/johnterickson/cow_test.git
-    # cd cow_test
-    # set COW_TEST_DIR=%CD%
-    # dotnet build
-    # popd
+    set MISTAKEN_PATH=%CD%ReFS.vhdx
 
+    pushd %TEMP%
+    git clone https://github.com/johnterickson/cow_test.git
+    cd cow_test
+    set COW_TEST_DIR=%CD%
+    dotnet build
+    popd
+    
     D:
     cd \
 
     echo SELECT VDISK FILE=D:\ReFS.vhdx > diskpart.script.txt
+    echo DETACH VDISK >> diskpart.script.txt
+    echo SELECT VDISK FILE=%MISTAKEN_PATH% >> diskpart.script.txt
     echo DETACH VDISK >> diskpart.script.txt
     diskpart /s diskpart.script.txt
     del D:\ReFS.vhdx
@@ -123,17 +127,12 @@ steps:
 
     format R: /fs:ReFS /Q /X /Y /DevDrv || format R: /fs:ReFS /Q /X /Y
 
-    # pushd %COW_TEST_DIR%
-    # echo test > r:\test.txt
-    # dotnet run -- "r:\test.txt" "r:\test.txt.cloned"
-    # del r:\test.txt
-    # del r:\test.txt.cloned
-    # popd
-
-    # dir /s /b "%AGENT_BUILDDIRECTORY%\*"
-    # mkdir "R:\%AGENT_BUILDDIRECTORY:~3%"
-    # robocopy /MOVE /E /R:0 /COPYALL "%AGENT_BUILDDIRECTORY%" "R:" *
-    # dir /s /b "%AGENT_BUILDDIRECTORY%\*"
+    pushd %COW_TEST_DIR%
+    echo test > r:\test.txt
+    dotnet run -- "r:\test.txt" "r:\test.txt.cloned"
+    del r:\test.txt
+    del r:\test.txt.cloned
+    popd
 
     IF EXIST "%AGENT_BUILDDIRECTORY%.old" ( rmdir /s /q "%AGENT_BUILDDIRECTORY%.old" )
     IF EXIST "%AGENT_BUILDDIRECTORY%" (
@@ -148,17 +147,17 @@ steps:
     diskpart /s diskpart.script.txt
     del diskpart.script.txt
 
-    # pushd %COW_TEST_DIR%
-    # echo test > %AGENT_BUILDDIRECTORY%\test.txt
-    # dotnet run -- "%AGENT_BUILDDIRECTORY%\test.txt" "%AGENT_BUILDDIRECTORY%\test.txt.cloned"
-    # del %AGENT_BUILDDIRECTORY%\test.txt
-    # del %AGENT_BUILDDIRECTORY%\test.txt.cloned
-    # popd
-
     mkdir "$(Build.ArtifactStagingDirectory)"
     mkdir "$(Build.BinariesDirectory)"
     mkdir "$(Build.SourcesDirectory)"
     mkdir "$(Common.TestResultsDirectory)"
+
+    pushd %COW_TEST_DIR%
+    echo test > $(Build.SourcesDirectory)\test.txt
+    dotnet run -- "$(Build.SourcesDirectory)\test.txt" "$(Build.SourcesDirectory)\test.txt.cloned"
+    del $(Build.SourcesDirectory)\test.txt
+    del $(Build.SourcesDirectory)\test.txt.cloned
+    popd
     
     IF EXIST "\MSBuildCache.old" ( rmdir /s /q "\MSBuildCache.old" )
     IF EXIST "\MSBuildCache" (
