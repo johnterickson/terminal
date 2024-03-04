@@ -102,14 +102,17 @@ steps:
     # dotnet build
     # popd
 
-    echo SELECT VDISK FILE=%CD%ReFS.vhdx > diskpart.script.txt
+    D:
+    cd \
+
+    echo SELECT VDISK FILE=D:\ReFS.vhdx > diskpart.script.txt
     echo DETACH VDISK >> diskpart.script.txt
     diskpart /s diskpart.script.txt
-    del %CD%ReFS.vhdx
+    del D:\ReFS.vhdx
     del diskpart.script.txt
 
-    echo CREATE VDISK FILE=%CD%ReFS.vhdx MAXIMUM=250000 TYPE=EXPANDABLE > diskpart.script.txt
-    echo SELECT VDISK FILE=%CD%ReFS.vhdx >> diskpart.script.txt
+    echo CREATE VDISK FILE=D:\ReFS.vhdx MAXIMUM=250000 TYPE=EXPANDABLE > diskpart.script.txt
+    echo SELECT VDISK FILE=D:\ReFS.vhdx >> diskpart.script.txt
     echo ATTACH VDISK >> diskpart.script.txt
     echo CREATE PARTITION PRIMARY >> diskpart.script.txt
     echo FORMAT FS=REFS QUICK >> diskpart.script.txt
@@ -138,7 +141,7 @@ steps:
     )
 
     mkdir "%AGENT_BUILDDIRECTORY%"
-    echo SELECT VDISK FILE=%CD%ReFS.vhdx >> diskpart.script.txt
+    echo SELECT VDISK FILE=D:\ReFS.vhdx >> diskpart.script.txt
     echo SELECT VOLUME=R >> diskpart.script.txt
     echo ASSIGN MOUNT=%AGENT_BUILDDIRECTORY% >> diskpart.script.txt
     type diskpart.script.txt
