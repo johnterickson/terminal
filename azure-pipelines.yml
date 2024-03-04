@@ -248,7 +248,7 @@ steps:
     echo msbuild stopped
     exit /b 0
 - powershell: |
-    Get-Process -Name procdump | Wait-Process -Timeout 300
+    Get-Process -Name procdump | Wait-Process -Timeout 30
     Get-Process -Name procdump | Stop-Process
     echo procdump no longer running
   displayName: 'Wait for procdump to finish'
@@ -271,11 +271,11 @@ steps:
     collectors: |
       - perfview: /ClrEvents=JITSymbols /KernelEvents=Process+Thread+ImageLoad+Profile+DiskIO+FileIO /CPUSampleMSec:1000
 
-- script: |
-    pktmon filter remove
-    pktmon filter add AFD -i 13.107.42.20
-    mkdir "$(Build.ArtifactStagingDirectory)\logs"
-    pktmon start --capture --file-name "$(Build.ArtifactStagingDirectory)\logs\pktmon.etl" --log-mode multi-file
+# - script: |
+#     pktmon filter remove
+#     pktmon filter add AFD -i 13.107.42.20
+#     mkdir "$(Build.ArtifactStagingDirectory)\logs"
+#     pktmon start --capture --file-name "$(Build.ArtifactStagingDirectory)\logs\pktmon.etl" --log-mode multi-file
 
 - template: .\build\pipelines\templates-v2\steps-restore-nuget.yml
 - script: |
@@ -297,15 +297,15 @@ steps:
     maximumCpuCount: false
   env:
     SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-- script: |
-    pktmon counters
-    pktmon stop
+# - script: |
+#     pktmon counters
+#     pktmon stop
 - script: |
     taskkill /f /im msbuild.exe 2>NUL
     echo msbuild stopped
     exit /b 0
 - powershell: |
-    Get-Process -Name procdump | Wait-Process -Timeout 120
+    Get-Process -Name procdump | Wait-Process -Timeout 60
     Get-Process -Name procdump | Stop-Process
     echo procdump no longer running
   displayName: 'Wait for procdump to finish'
