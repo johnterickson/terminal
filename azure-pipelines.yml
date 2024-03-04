@@ -31,6 +31,8 @@ variables:
   EnablePipelineCache: true
   VsDevCmd: 'C:\Program Files\Microsoft Visual Studio\2022\Preview\Common7\Tools\VsDevCmd.bat'
   MSBUILDCACHE_PIPELINECACHING_BENCHMARK: 1000
+  # diagnostics
+  CaptureDumps: false
 
 strategy:
   matrix:
@@ -70,28 +72,6 @@ strategy:
       MSBuildCacheEnabled: 'true'
 
 steps:
-# - script: |
-#     tracert -h 5 -w 1000 artifacts.dev.azure.com
-#     ping artifacts.dev.azure.com
-  
-- powershell: |
-    Set-MpPreference -DisableTDTFeature $true
-  displayName: 'Fix CPU sampling'
-
-- powershell: |
-    Get-Volume
-    Get-PhysicalDisk
-  displayName: 'Disk Info'
-
-# - script: |
-#     cd \
-#     curl.exe https://live.sysinternals.com/handle.exe -o handle.exe
-#     handle.exe /accepteula "$(Agent.RootDirectory)"
-#   displayName: 'show handles to Agent.RootDirectory'
-
-- script: set
-  displayName: 'DUMP ENV VARS'
-
 - script: |
     @echo on
 
@@ -188,43 +168,40 @@ steps:
     exit /b %TEST_RESULT%
   displayName: 'Remap AGENT_BUILDDIRECTORY to a ReFS (DevDrv if available) volume'
 
-- powershell: |
-    Get-Volume
-    Get-PhysicalDisk
-  displayName: 'Disk Info'
-
-- script: |
-    dotnet nuget locals all -l
-  displayName: 'Show nuget cache locations'
-
 - checkout: self
   submodules: recursive
 
-
 # set up env (vs preview)
 - script: |
-   cd %TEMP%
-   del vs_enterprise.exe
-   
-   curl.exe -L https://aka.ms/vs/17/pre/vs_enterprise.exe -o vs_enterprise.exe
-   
-   vs_enterprise.exe --passive --norestart --wait --config %CD%\.vsconfig
-   set VS_ERRORLEVEL=%ERRORLEVEL%
-   del vs_enterprise.exe
-   
-   IF "%VS_ERRORLEVEL%"=="0" (
-     echo install success: %VS_ERRORLEVEL%
-     exit /b 0
-   )
-   IF "%VS_ERRORLEVEL%"=="3010" (
-     echo install success: %VS_ERRORLEVEL%
-     exit /b 0
-   )
+    cd %TEMP%
+    echo delete old logs
+    del dd_*
+    del vs_enterprise.exe
+    
+    curl.exe -L https://aka.ms/vs/17/pre/vs_enterprise.exe -o vs_enterprise.exe
+    
+    vs_enterprise.exe --passive --norestart --wait --config %CD%\.vsconfig
+    set VS_ERRORLEVEL=%ERRORLEVEL%
+    del vs_enterprise.exe
 
-   echo install fail: %VS_ERRORLEVEL%
+    echo store logs
+    mkdir "$(Build.ArtifactStagingDirectory)\logs"
+    mkdir "$(Build.ArtifactStagingDirectory)\logs\VSSetup"
+    move dd_* "$(Build.ArtifactStagingDirectory)\logs\VSSetup\"
+    
+    IF "%VS_ERRORLEVEL%"=="0" (
+      echo install success: %VS_ERRORLEVEL%
+      exit /b 0
+    )
+    IF "%VS_ERRORLEVEL%"=="3010" (
+      echo install success: %VS_ERRORLEVEL%
+      exit /b 0
+    )
 
-   CALL "$(VsDevCmd)"
-   msbuild --version
+    echo install fail: %VS_ERRORLEVEL%
+
+    CALL "$(VsDevCmd)"
+    msbuild --version
   displayName: 'Install VS Preview'
 
 - script: |
@@ -237,12 +214,13 @@ steps:
 
 - template: .\build\pipelines\templates-v2\steps-restore-nuget.yml
 
-# - script: |
-#     del /q %TEMP%\procdump.exe
-#     curl.exe https://live.sysinternals.com/procdump.exe -o %TEMP%\procdump.exe
-#     mkdir "$(Build.ArtifactStagingDirectory)\logs" 2>NUL
-#     start cmd /c %TEMP%\procdump.exe -w -ma -n 10 -s 60 msbuild "$(Build.ArtifactStagingDirectory)\logs" ^> $(Build.ArtifactStagingDirectory)\logs\procdump.log 2^>^&1
-#     exit /b 0
+- script: |
+    del /q %TEMP%\procdump.exe
+    curl.exe https://live.sysinternals.com/procdump.exe -o %TEMP%\procdump.exe
+    mkdir "$(Build.ArtifactStagingDirectory)\logs" 2>NUL
+    start cmd /c %TEMP%\procdump.exe -w -ma -n 10 -s 60 msbuild "$(Build.ArtifactStagingDirectory)\logs" ^> $(Build.ArtifactStagingDirectory)\logs\procdump.log 2^>^&1
+    exit /b 0
+  condition: and(succeeded(), eq(variables['CaptureDumps'], 'true'))
 
 - script: >
     echo ON &&
@@ -275,16 +253,19 @@ steps:
 #   env:
 #     SYSTEM_ACCESSTOKEN: $(System.AccessToken)
 
-# - script: |
-#     taskkill /f /im msbuild.exe 2>NUL
-#     echo msbuild stopped
-#     exit /b 0
-# - powershell: |
-#     Get-Process -Name procdump | Wait-Process -Timeout 30
-#     Get-Process -Name procdump | Stop-Process
-#     echo procdump no longer running
-#   displayName: 'Wait for procdump to finish'
-#   errorActionPreference: continue
+- script: |
+    taskkill /f /im msbuild.exe 2>NUL
+    echo msbuild stopped
+    exit /b 0
+  condition: and(succeeded(), eq(variables['CaptureDumps'], 'true'))
+- powershell: |
+    Get-Process -Name procdump | Wait-Process -Timeout 30
+    Get-Process -Name procdump | Stop-Process
+    echo procdump no longer running
+  displayName: 'Wait for procdump to finish'
+  errorActionPreference: continue
+  condition: and(succeeded(), eq(variables['CaptureDumps'], 'true'))
+
 - publish: $(Build.ArtifactStagingDirectory)\logs
   displayName: Publish Logs
   artifact: '$(System.JobDisplayName) logs'
@@ -311,12 +292,13 @@ steps:
 #     pktmon start --capture --file-name "$(Build.ArtifactStagingDirectory)\logs\pktmon.etl" --log-mode multi-file
 
 - template: .\build\pipelines\templates-v2\steps-restore-nuget.yml
-# - script: |
-#     del /q %TEMP%\procdump.exe
-#     curl.exe https://live.sysinternals.com/procdump.exe -o %TEMP%\procdump.exe
-#     mkdir "$(Build.ArtifactStagingDirectory)\logs" 2>NUL
-#     start cmd /c %TEMP%\procdump.exe -w -ma -n 10 -s 30 msbuild "$(Build.ArtifactStagingDirectory)\logs" ^> $(Build.ArtifactStagingDirectory)\logs\procdump.log 2^>^&1
-#     exit /b 0
+- script: |
+    del /q %TEMP%\procdump.exe
+    curl.exe https://live.sysinternals.com/procdump.exe -o %TEMP%\procdump.exe
+    mkdir "$(Build.ArtifactStagingDirectory)\logs" 2>NUL
+    start cmd /c %TEMP%\procdump.exe -w -ma -n 10 -s 30 msbuild "$(Build.ArtifactStagingDirectory)\logs" ^> $(Build.ArtifactStagingDirectory)\logs\procdump.log 2^>^&1
+    exit /b 0
+  condition: and(succeeded(), eq(variables['CaptureDumps'], 'true'))
 
 - script: >
     echo ON &&
@@ -351,26 +333,21 @@ steps:
 # - script: |
 #     pktmon counters
 #     pktmon stop
-# - script: |
-#     taskkill /f /im msbuild.exe 2>NUL
-#     echo msbuild stopped
-#     exit /b 0
-# - powershell: |
-#     Get-Process -Name procdump | Wait-Process -Timeout 60
-#     Get-Process -Name procdump | Stop-Process
-#     echo procdump no longer running
-#   displayName: 'Wait for procdump to finish'
-#   errorActionPreference: continue
+
+- script: |
+    taskkill /f /im msbuild.exe 2>NUL
+    echo msbuild stopped
+    exit /b 0
+  condition: and(succeeded(), eq(variables['CaptureDumps'], 'true'))
+- powershell: |
+    Get-Process -Name procdump | Wait-Process -Timeout 60
+    Get-Process -Name procdump | Stop-Process
+    echo procdump no longer running
+  displayName: 'Wait for procdump to finish'
+  errorActionPreference: continue
+  condition: and(succeeded(), eq(variables['CaptureDumps'], 'true'))
   
 - publish: $(Build.ArtifactStagingDirectory)\logs
   displayName: Publish Logs
   artifact: '$(System.JobDisplayName) logs 2'
   condition: always()
-
-# - script: |
-#     @echo on
-#     IF EXIST R:\MSBuildCache\ (
-#       for /F %%I IN ('dir /s /b R:\MSBuildCache\*.blob') DO (echo %%I && fsutil file queryExtentsAndRefCounts "%%I" )
-#     )
-#     dir R:\
-#   displayName: 'check for CoW'
