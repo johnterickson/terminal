@@ -297,12 +297,12 @@ steps:
     git clean -xdf || git clean -xdf
   displayName: 'Clean up, but keep local cache'
 
-# - task: DiagnosticsTask@0
-#   displayName: 'Start PerfView'
-#   inputs:
-#     operation: start
-#     collectors: |
-#       - perfview: /ClrEvents=JITSymbols /KernelEvents=Process+Thread+ImageLoad+Profile+DiskIO+FileIO /CPUSampleMSec:1000
+- task: DiagnosticsTask@0
+  displayName: 'Start PerfView'
+  inputs:
+    operation: start
+    collectors: |
+      - perfview
 
 # - script: |
 #     pktmon filter remove
