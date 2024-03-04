@@ -221,6 +221,7 @@ steps:
     start cmd /c %TEMP%\procdump.exe -w -ma -n 10 -s 60 msbuild "$(Build.ArtifactStagingDirectory)\logs" ^> $(Build.ArtifactStagingDirectory)\logs\procdump.log 2^>^&1
     exit /b 0
   condition: and(succeeded(), eq(variables['CaptureDumps'], 'true'))
+  displayName: 'Start procdump'
 
 - script: >
     echo ON &&
@@ -258,6 +259,7 @@ steps:
     echo msbuild stopped
     exit /b 0
   condition: and(succeeded(), eq(variables['CaptureDumps'], 'true'))
+  displayName: 'Stop msbuild'
 - powershell: |
     Get-Process -Name procdump | Wait-Process -Timeout 30
     Get-Process -Name procdump | Stop-Process
