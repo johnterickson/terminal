@@ -98,6 +98,7 @@ steps:
     set MISTAKEN_PATH=%CD%ReFS.vhdx
 
     pushd %TEMP%
+    rmdir /s /q cow_test
     git clone https://github.com/johnterickson/cow_test.git
     cd cow_test
     set COW_TEST_DIR=%CD%
