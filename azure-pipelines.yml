@@ -240,7 +240,7 @@ steps:
 # - script: |
 #     del /q %TEMP%\procdump.exe
 #     curl.exe https://live.sysinternals.com/procdump.exe -o %TEMP%\procdump.exe
-#     mkdir "$(Build.ArtifactStagingDirectory)\logs"
+#     mkdir "$(Build.ArtifactStagingDirectory)\logs" 2>NUL
 #     start cmd /c %TEMP%\procdump.exe -w -ma -n 10 -s 60 msbuild "$(Build.ArtifactStagingDirectory)\logs" ^> $(Build.ArtifactStagingDirectory)\logs\procdump.log 2^>^&1
 
 - task: VSBuild@1
@@ -298,7 +298,7 @@ steps:
 - script: |
     del /q %TEMP%\procdump.exe
     curl.exe https://live.sysinternals.com/procdump.exe -o %TEMP%\procdump.exe
-    mkdir "$(Build.ArtifactStagingDirectory)\logs"
+    mkdir "$(Build.ArtifactStagingDirectory)\logs" 2>NUL
     start cmd /c %TEMP%\procdump.exe -w -ma -n 10 -s 30 msbuild "$(Build.ArtifactStagingDirectory)\logs" ^> $(Build.ArtifactStagingDirectory)\logs\procdump.log 2^>^&1
 
 - task: VSBuild@1
