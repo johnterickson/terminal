@@ -109,10 +109,14 @@ steps:
 
     echo SELECT VDISK FILE=D:\ReFS.vhdx > diskpart.script.txt
     echo DETACH VDISK >> diskpart.script.txt
-    echo SELECT VDISK FILE=%MISTAKEN_PATH% >> diskpart.script.txt
-    echo DETACH VDISK >> diskpart.script.txt
     diskpart /s diskpart.script.txt
     del D:\ReFS.vhdx
+    del diskpart.script.txt
+
+    echo SELECT VDISK FILE=%MISTAKEN_PATH% > diskpart.script.txt
+    echo DETACH VDISK >> diskpart.script.txt
+    diskpart /s diskpart.script.txt
+    del %MISTAKEN_PATH%
     del diskpart.script.txt
 
     echo CREATE VDISK FILE=D:\ReFS.vhdx MAXIMUM=250000 TYPE=EXPANDABLE > diskpart.script.txt
