@@ -245,16 +245,17 @@ steps:
 #     exit /b 0
 
 - script: >
+    echo ON &&
     CALL "$(VsDevCmd)" &&
     cd /d "$(Build.SourcesDirectory)" &&
-    msbuild.exe /m
+    msbuild.exe /m OpenConsole.sln
       /p:Platform=$(BuildPlatform)
       /p:Configuration=$(BuildConfiguration)
       /p:WindowsTerminalOfficialBuild=true;WindowsTerminalBranding=Dev;PGOBuildMode=None
       /bl:$(Build.ArtifactStagingDirectory)\logs\msbuild.binlog
       /ds:false
       $(AdditionalMsBuildArgs)
-      OpenConsole.sln
+  displayName: 'Build OpenConsole.sln'
   env:
     SYSTEM_ACCESSTOKEN: $(System.AccessToken)
 
@@ -318,16 +319,17 @@ steps:
     exit /b 0
 
 - script: >
+    echo ON &&
     CALL "$(VsDevCmd)" &&
     cd /d "$(Build.SourcesDirectory)" &&
-    msbuild.exe
+    msbuild.exe OpenConsole.sln
       /p:Platform=$(BuildPlatform)
       /p:Configuration=$(BuildConfiguration)
       /p:WindowsTerminalOfficialBuild=true;WindowsTerminalBranding=Dev;PGOBuildMode=None
       /bl:$(Build.ArtifactStagingDirectory)\logs\msbuild.binlog
       /ds:false
       $(AdditionalMsBuildArgs)
-      OpenConsole.sln
+  displayName: 'Build OpenConsole.sln'
   env:
     SYSTEM_ACCESSTOKEN: $(System.AccessToken)
 # - task: VSBuild@1
