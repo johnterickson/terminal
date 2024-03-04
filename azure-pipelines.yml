@@ -244,21 +244,34 @@ steps:
 #     start cmd /c %TEMP%\procdump.exe -w -ma -n 10 -s 60 msbuild "$(Build.ArtifactStagingDirectory)\logs" ^> $(Build.ArtifactStagingDirectory)\logs\procdump.log 2^>^&1
 #     exit /b 0
 
-- task: VSBuild@1
-  displayName: Build OpenConsole.sln
-  inputs:
-    solution: 'OpenConsole.sln'
-    msbuildArgs: >-
+- script: >
+    cd /d "$(Build.SourcesDirectory)" &&
+    msbuild.exe /m
+      /p:Platform=$(BuildPlatform)
+      /p:Configuration=$(BuildConfiguration)
       /p:WindowsTerminalOfficialBuild=true;WindowsTerminalBranding=Dev;PGOBuildMode=None
       /bl:$(Build.ArtifactStagingDirectory)\logs\msbuild.binlog
       /ds:false
       $(AdditionalMsBuildArgs)
-    platform: $(BuildPlatform)
-    configuration: $(BuildConfiguration)
-    msbuildArchitecture: x64
-    maximumCpuCount: true
+      OpenConsole.sln
   env:
     SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+
+# - task: VSBuild@1
+#   displayName: Build OpenConsole.sln
+#   inputs:
+#     solution: 'OpenConsole.sln'
+#     msbuildArgs: >-
+#       /p:WindowsTerminalOfficialBuild=true;WindowsTerminalBranding=Dev;PGOBuildMode=None
+#       /bl:$(Build.ArtifactStagingDirectory)\logs\msbuild.binlog
+#       /ds:false
+#       $(AdditionalMsBuildArgs)
+#     platform: $(BuildPlatform)
+#     configuration: $(BuildConfiguration)
+#     msbuildArchitecture: x64
+#     maximumCpuCount: true
+#   env:
+#     SYSTEM_ACCESSTOKEN: $(System.AccessToken)
 
 # - script: |
 #     taskkill /f /im msbuild.exe 2>NUL
@@ -303,21 +316,34 @@ steps:
     start cmd /c %TEMP%\procdump.exe -w -ma -n 10 -s 30 msbuild "$(Build.ArtifactStagingDirectory)\logs" ^> $(Build.ArtifactStagingDirectory)\logs\procdump.log 2^>^&1
     exit /b 0
 
-- task: VSBuild@1
-  displayName: Build OpenConsole.sln
-  inputs:
-    solution: 'OpenConsole.sln'
-    msbuildArgs: >-
+- script: >
+    cd /d "$(Build.SourcesDirectory)" &&
+    msbuild.exe
+      /p:Platform=$(BuildPlatform)
+      /p:Configuration=$(BuildConfiguration)
       /p:WindowsTerminalOfficialBuild=true;WindowsTerminalBranding=Dev;PGOBuildMode=None
       /bl:$(Build.ArtifactStagingDirectory)\logs\msbuild.binlog
       /ds:false
       $(AdditionalMsBuildArgs)
-    platform: $(BuildPlatform)
-    configuration: $(BuildConfiguration)
-    msbuildArchitecture: x64
-    maximumCpuCount: false
+      OpenConsole.sln
   env:
     SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+# - task: VSBuild@1
+#   displayName: Build OpenConsole.sln
+#   inputs:
+#     solution: 'OpenConsole.sln'
+#     msbuildArgs: >-
+#       /p:WindowsTerminalOfficialBuild=true;WindowsTerminalBranding=Dev;PGOBuildMode=None
+#       /bl:$(Build.ArtifactStagingDirectory)\logs\msbuild.binlog
+#       /ds:false
+#       $(AdditionalMsBuildArgs)
+#     platform: $(BuildPlatform)
+#     configuration: $(BuildConfiguration)
+#     msbuildArchitecture: x64
+#     maximumCpuCount: false
+#   env:
+#     SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+
 # - script: |
 #     pktmon counters
 #     pktmon stop
