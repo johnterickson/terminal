@@ -229,14 +229,18 @@ steps:
 
 - script: |
     rmdir /s /q "$(Build.ArtifactStagingDirectory)\logs"
+    mkdir "$(Build.ArtifactStagingDirectory)\logs"
     rmdir /s /q "\MSBuildCache"
+    rmdir /s /q "R:\MSBuildCache"
     git clean -xdf || git clean -xdf
   displayName: 'Clean up'
 
 - template: .\build\pipelines\templates-v2\steps-restore-nuget.yml
+
 # - script: |
 #     del /q %TEMP%\procdump.exe
 #     curl.exe https://live.sysinternals.com/procdump.exe -o %TEMP%\procdump.exe
+#     mkdir "$(Build.ArtifactStagingDirectory)\logs"
 #     start cmd /c %TEMP%\procdump.exe -w -ma -n 10 -s 60 msbuild "$(Build.ArtifactStagingDirectory)\logs" ^> $(Build.ArtifactStagingDirectory)\logs\procdump.log 2^>^&1
 
 - task: VSBuild@1
@@ -255,16 +259,16 @@ steps:
   env:
     SYSTEM_ACCESSTOKEN: $(System.AccessToken)
 
-- script: |
-    taskkill /f /im msbuild.exe 2>NUL
-    echo msbuild stopped
-    exit /b 0
-- powershell: |
-    Get-Process -Name procdump | Wait-Process -Timeout 30
-    Get-Process -Name procdump | Stop-Process
-    echo procdump no longer running
-  displayName: 'Wait for procdump to finish'
-  errorActionPreference: continue
+# - script: |
+#     taskkill /f /im msbuild.exe 2>NUL
+#     echo msbuild stopped
+#     exit /b 0
+# - powershell: |
+#     Get-Process -Name procdump | Wait-Process -Timeout 30
+#     Get-Process -Name procdump | Stop-Process
+#     echo procdump no longer running
+#   displayName: 'Wait for procdump to finish'
+#   errorActionPreference: continue
 - publish: $(Build.ArtifactStagingDirectory)\logs
   displayName: Publish Logs
   artifact: '$(System.JobDisplayName) logs'
@@ -273,6 +277,7 @@ steps:
 
 - script: |
     rmdir /s /q "$(Build.ArtifactStagingDirectory)\logs"
+    mkdir "$(Build.ArtifactStagingDirectory)\logs"
     git clean -xdf || git clean -xdf
   displayName: 'Clean up, but keep local cache'
 
@@ -293,6 +298,7 @@ steps:
 - script: |
     del /q %TEMP%\procdump.exe
     curl.exe https://live.sysinternals.com/procdump.exe -o %TEMP%\procdump.exe
+    mkdir "$(Build.ArtifactStagingDirectory)\logs"
     start cmd /c %TEMP%\procdump.exe -w -ma -n 10 -s 30 msbuild "$(Build.ArtifactStagingDirectory)\logs" ^> $(Build.ArtifactStagingDirectory)\logs\procdump.log 2^>^&1
 
 - task: VSBuild@1
