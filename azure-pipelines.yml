@@ -38,18 +38,18 @@ strategy:
     # #   BuildConfiguration: AuditMode
     # #   BuildPlatform: x64
     # #   AdditionalMsBuildArgs: ''
-    # release_x64-baseline:
-    #   BuildConfiguration: Release
-    #   BuildPlatform: x64
-    #   AdditionalMsBuildArgs: ''
+    release_x64-baseline:
+      BuildConfiguration: Release
+      BuildPlatform: x64
+      AdditionalMsBuildArgs: ''
     # # release_x86-baseline:
     # #   BuildConfiguration: Release
     # #   BuildPlatform: x86
     # #   AdditionalMsBuildArgs: ''
-    # release_arm64-baseline:
-    #   BuildConfiguration: Release
-    #   BuildPlatform: arm64
-    #   AdditionalMsBuildArgs: ''
+    release_arm64-baseline:
+      BuildConfiguration: Release
+      BuildPlatform: arm64
+      AdditionalMsBuildArgs: ''
     # auditmode_x64-MSBuildCache:
     #   BuildConfiguration: AuditMode
     #   BuildPlatform: x64
@@ -297,12 +297,12 @@ steps:
     git clean -xdf || git clean -xdf
   displayName: 'Clean up, but keep local cache'
 
-- task: DiagnosticsTask@0
-  displayName: 'Start PerfView'
-  inputs:
-    operation: start
-    collectors: |
-      - perfview: /ClrEvents=JITSymbols /KernelEvents=Process+Thread+ImageLoad+Profile+DiskIO+FileIO /CPUSampleMSec:1000
+# - task: DiagnosticsTask@0
+#   displayName: 'Start PerfView'
+#   inputs:
+#     operation: start
+#     collectors: |
+#       - perfview: /ClrEvents=JITSymbols /KernelEvents=Process+Thread+ImageLoad+Profile+DiskIO+FileIO /CPUSampleMSec:1000
 
 # - script: |
 #     pktmon filter remove
@@ -311,12 +311,12 @@ steps:
 #     pktmon start --capture --file-name "$(Build.ArtifactStagingDirectory)\logs\pktmon.etl" --log-mode multi-file
 
 - template: .\build\pipelines\templates-v2\steps-restore-nuget.yml
-- script: |
-    del /q %TEMP%\procdump.exe
-    curl.exe https://live.sysinternals.com/procdump.exe -o %TEMP%\procdump.exe
-    mkdir "$(Build.ArtifactStagingDirectory)\logs" 2>NUL
-    start cmd /c %TEMP%\procdump.exe -w -ma -n 10 -s 30 msbuild "$(Build.ArtifactStagingDirectory)\logs" ^> $(Build.ArtifactStagingDirectory)\logs\procdump.log 2^>^&1
-    exit /b 0
+# - script: |
+#     del /q %TEMP%\procdump.exe
+#     curl.exe https://live.sysinternals.com/procdump.exe -o %TEMP%\procdump.exe
+#     mkdir "$(Build.ArtifactStagingDirectory)\logs" 2>NUL
+#     start cmd /c %TEMP%\procdump.exe -w -ma -n 10 -s 30 msbuild "$(Build.ArtifactStagingDirectory)\logs" ^> $(Build.ArtifactStagingDirectory)\logs\procdump.log 2^>^&1
+#     exit /b 0
 
 - script: >
     echo ON &&
@@ -351,16 +351,16 @@ steps:
 # - script: |
 #     pktmon counters
 #     pktmon stop
-- script: |
-    taskkill /f /im msbuild.exe 2>NUL
-    echo msbuild stopped
-    exit /b 0
-- powershell: |
-    Get-Process -Name procdump | Wait-Process -Timeout 60
-    Get-Process -Name procdump | Stop-Process
-    echo procdump no longer running
-  displayName: 'Wait for procdump to finish'
-  errorActionPreference: continue
+# - script: |
+#     taskkill /f /im msbuild.exe 2>NUL
+#     echo msbuild stopped
+#     exit /b 0
+# - powershell: |
+#     Get-Process -Name procdump | Wait-Process -Timeout 60
+#     Get-Process -Name procdump | Stop-Process
+#     echo procdump no longer running
+#   displayName: 'Wait for procdump to finish'
+#   errorActionPreference: continue
   
 - publish: $(Build.ArtifactStagingDirectory)\logs
   displayName: Publish Logs
