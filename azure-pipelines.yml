@@ -151,13 +151,6 @@ steps:
     mkdir "$(Build.BinariesDirectory)"
     mkdir "$(Build.SourcesDirectory)"
     mkdir "$(Common.TestResultsDirectory)"
-
-    pushd %COW_TEST_DIR%
-    echo test > $(Build.SourcesDirectory)\test.txt
-    dotnet run -- "$(Build.SourcesDirectory)\test.txt" "$(Build.SourcesDirectory)\test.txt.cloned"
-    del $(Build.SourcesDirectory)\test.txt
-    del $(Build.SourcesDirectory)\test.txt.cloned
-    popd
     
     IF EXIST "\MSBuildCache.old" ( rmdir /s /q "\MSBuildCache.old" )
     IF EXIST "\MSBuildCache" (
@@ -179,6 +172,16 @@ steps:
 
     mkdir R:\TEMP
     echo ##vso[task.setvariable variable=TEMP;]R:\TEMP
+
+    pushd %COW_TEST_DIR%
+    echo test > $(Build.SourcesDirectory)\test.txt
+    dotnet run -- "$(Build.SourcesDirectory)\test.txt" "$(Build.SourcesDirectory)\test.txt.cloned"
+    set TEST_RESULT=%ERRORLEVEL%
+    del $(Build.SourcesDirectory)\test.txt
+    del $(Build.SourcesDirectory)\test.txt.cloned
+    popd
+
+    exit /b %TEST_RESULT%
   displayName: 'Remap AGENT_BUILDDIRECTORY to a ReFS (DevDrv if available) volume'
 
 - powershell: |
