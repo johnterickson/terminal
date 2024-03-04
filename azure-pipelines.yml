@@ -180,7 +180,7 @@ steps:
 
     cd /d "$(Build.SourcesDirectory)"
     echo test > test.txt
-    dotnet run --project %COW_TEST_DIR%\cow_test.csproj -- test.txt test.txt.cloned
+    dotnet run --project %COW_TEST_DIR%\cow_test.csproj -- "%CD%\test.txt" "%CD%\test.txt.cloned"
     set TEST_RESULT=%ERRORLEVEL%
     del test.txt
     del test.txt.cloned
