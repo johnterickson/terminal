@@ -178,13 +178,12 @@ steps:
     mkdir R:\TEMP
     echo ##vso[task.setvariable variable=TEMP;]R:\TEMP
 
-    pushd %COW_TEST_DIR%
-    echo test > $(Build.SourcesDirectory)\test.txt
-    dotnet run -- "$(Build.SourcesDirectory)\test.txt" "$(Build.SourcesDirectory)\test.txt.cloned"
+    cd /d "$(Build.SourcesDirectory)"
+    echo test > test.txt
+    dotnet run --project %COW_TEST_DIR%\cow_test.csproj -- test.txt test.txt.cloned
     set TEST_RESULT=%ERRORLEVEL%
-    del $(Build.SourcesDirectory)\test.txt
-    del $(Build.SourcesDirectory)\test.txt.cloned
-    popd
+    del test.txt
+    del test.txt.cloned
 
     exit /b %TEST_RESULT%
   displayName: 'Remap AGENT_BUILDDIRECTORY to a ReFS (DevDrv if available) volume'
