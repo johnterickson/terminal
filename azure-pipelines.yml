@@ -32,7 +32,7 @@ variables:
   VsDevCmd: 'C:\Program Files\Microsoft Visual Studio\2022\Preview\Common7\Tools\VsDevCmd.bat'
   MSBUILDCACHE_PIPELINECACHING_BENCHMARK: 1000
   # diagnostics
-  CaptureDumps: false
+  # CaptureDumps: false
 
 strategy:
   matrix:
