@@ -75,6 +75,10 @@ steps:
 - powershell: |
     Set-MpPreference -DisableRealtimeMonitoring $true
     Set-MpPreference -DisableTDTFeature $true
+
+    # Let's see if random internet person is right
+    copy C:\Windows\system32\cmd.exe StandardCollector.Service.exe
+    .\StandardCollector.Service.exe /C echo Reset please
   displayName: 'Fix CPU sampling'
 
 - script: |
