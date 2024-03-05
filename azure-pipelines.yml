@@ -75,6 +75,7 @@ steps:
 #     ping artifacts.dev.azure.com
   
 - powershell: |
+    Set-MpPreference -DisableRealtimeMonitoring $true
     Set-MpPreference -DisableTDTFeature $true
   displayName: 'Fix CPU sampling'
 
