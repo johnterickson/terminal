@@ -47,7 +47,7 @@
       \**\ApplicationInsights.config;
       $(LocalAppData)\Microsoft\VSApplicationInsights\**;
       $(LocalAppData)\Microsoft\Windows\INetCache\**;
-      $(windir)
+      C:\Windows
     </MSBuildCacheAllowFileAccessAfterProjectFinishFilePatterns>
   </PropertyGroup>
 
