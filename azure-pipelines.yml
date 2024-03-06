@@ -40,18 +40,18 @@ strategy:
     # #   BuildConfiguration: AuditMode
     # #   BuildPlatform: x64
     # #   AdditionalMsBuildArgs: ''
-    release_x64-baseline:
-      BuildConfiguration: Release
-      BuildPlatform: x64
-      AdditionalMsBuildArgs: ''
+    # release_x64-baseline:
+    #   BuildConfiguration: Release
+    #   BuildPlatform: x64
+    #   AdditionalMsBuildArgs: ''
     # # release_x86-baseline:
     # #   BuildConfiguration: Release
     # #   BuildPlatform: x86
     # #   AdditionalMsBuildArgs: ''
-    release_arm64-baseline:
-      BuildConfiguration: Release
-      BuildPlatform: arm64
-      AdditionalMsBuildArgs: ''
+    # release_arm64-baseline:
+    #   BuildConfiguration: Release
+    #   BuildPlatform: arm64
+    #   AdditionalMsBuildArgs: ''
     # auditmode_x64-MSBuildCache:
     #   BuildConfiguration: AuditMode
     #   BuildPlatform: x64
@@ -65,11 +65,11 @@ strategy:
     #   BuildConfiguration: Release
     #   BuildPlatform: x86
     #   AdditionalMsBuildArgs: '-graph -reportfileaccesses -p:MSBuildCacheLogDirectory=$(Build.ArtifactStagingDirectory)\logs\MSBuildCache'
-    release_arm64-MSBuildCache:
-      BuildConfiguration: Release
-      BuildPlatform: arm64
-      AdditionalMsBuildArgs: '/nodeReuse:false -graph -reportfileaccesses -p:MSBuildCacheLogDirectory=$(Build.ArtifactStagingDirectory)\logs\MSBuildCache'
-      MSBuildCacheEnabled: 'true'
+    # release_arm64-MSBuildCache:
+    #   BuildConfiguration: Release
+    #   BuildPlatform: arm64
+    #   AdditionalMsBuildArgs: '/nodeReuse:false -graph -reportfileaccesses -p:MSBuildCacheLogDirectory=$(Build.ArtifactStagingDirectory)\logs\MSBuildCache'
+    #   MSBuildCacheEnabled: 'true'
 
 steps:
 - powershell: |
