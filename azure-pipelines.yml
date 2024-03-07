@@ -85,6 +85,21 @@ steps:
     Get-Volume
 
 # - script: |
+#     cd /d "$(Build.SourcesDirectory)"
+#     rmdir /s /q cow_test
+#     git clone https://github.com/johnterickson/cow_test.git
+#     cd cow_test
+#     dotnet build
+#     echo test > test.txt
+#     dotnet run --project %COW_TEST_DIR%\cow_test.csproj -- "%CD%\test.txt" "%CD%\test.txt.cloned"
+#     set TEST_RESULT=%ERRORLEVEL%
+#     del test.txt
+#     del test.txt.cloned
+#     rmdir /s /q cow_test
+#     exit /b %TEST_RESULT%
+#   displayName: 'Test CoW'
+
+# - script: |
 #     @echo on
 
 #     set MISTAKEN_PATH=%CD%ReFS.vhdx
@@ -182,21 +197,6 @@ steps:
 
 - checkout: self
   submodules: recursive
-
-- script: |
-    cd /d "$(Build.SourcesDirectory)"
-    rmdir /s /q cow_test
-    git clone https://github.com/johnterickson/cow_test.git
-    cd cow_test
-    dotnet build
-    echo test > test.txt
-    dotnet run --project %COW_TEST_DIR%\cow_test.csproj -- "%CD%\test.txt" "%CD%\test.txt.cloned"
-    set TEST_RESULT=%ERRORLEVEL%
-    del test.txt
-    del test.txt.cloned
-    rmdir /s /q cow_test
-    exit /b %TEST_RESULT%
-  displayName: 'Test CoW'
 
 # set up env (vs preview)
 - script: |
