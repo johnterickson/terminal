@@ -79,104 +79,122 @@ strategy:
     #   MSBuildCacheEnabled: 'true'
 
 steps:
+- powershell: 
+    Get-Volume
+    
+# - script: |
+#     @echo on
+
+#     set MISTAKEN_PATH=%CD%ReFS.vhdx
+
+#     pushd %TEMP%
+#     rmdir /s /q cow_test
+#     git clone https://github.com/johnterickson/cow_test.git
+#     cd cow_test
+#     set COW_TEST_DIR=%CD%
+#     dotnet build
+#     popd
+    
+#     D:
+#     cd \
+
+#     echo SELECT VDISK FILE=D:\ReFS.vhdx > diskpart.script.txt
+#     echo DETACH VDISK >> diskpart.script.txt
+#     diskpart /s diskpart.script.txt
+#     del D:\ReFS.vhdx
+#     del diskpart.script.txt
+
+#     echo SELECT VDISK FILE=%MISTAKEN_PATH% > diskpart.script.txt
+#     echo DETACH VDISK >> diskpart.script.txt
+#     diskpart /s diskpart.script.txt
+#     del %MISTAKEN_PATH%
+#     del diskpart.script.txt
+
+#     echo CREATE VDISK FILE=D:\ReFS.vhdx MAXIMUM=250000 TYPE=EXPANDABLE > diskpart.script.txt
+#     echo SELECT VDISK FILE=D:\ReFS.vhdx >> diskpart.script.txt
+#     echo ATTACH VDISK >> diskpart.script.txt
+#     echo CREATE PARTITION PRIMARY >> diskpart.script.txt
+#     echo FORMAT FS=REFS QUICK >> diskpart.script.txt
+#     echo ASSIGN LETTER=R >> diskpart.script.txt
+#     type diskpart.script.txt
+#     diskpart /s diskpart.script.txt
+#     del diskpart.script.txt
+
+#     format R: /fs:ReFS /Q /X /Y /DevDrv || format R: /fs:ReFS /Q /X /Y
+
+#     pushd %COW_TEST_DIR%
+#     echo test > r:\test.txt
+#     dotnet run -- "r:\test.txt" "r:\test.txt.cloned"
+#     del r:\test.txt
+#     del r:\test.txt.cloned
+#     popd
+
+#     IF EXIST "%AGENT_BUILDDIRECTORY%.old" ( rmdir /s /q "%AGENT_BUILDDIRECTORY%.old" )
+#     IF EXIST "%AGENT_BUILDDIRECTORY%" (
+#       rmdir /s /q "%AGENT_BUILDDIRECTORY%" || move "%AGENT_BUILDDIRECTORY%" "%AGENT_BUILDDIRECTORY%.old"
+#     )
+
+#     mkdir "%AGENT_BUILDDIRECTORY%"
+#     echo SELECT VDISK FILE=D:\ReFS.vhdx >> diskpart.script.txt
+#     echo SELECT VOLUME=R >> diskpart.script.txt
+#     echo ASSIGN MOUNT=%AGENT_BUILDDIRECTORY% >> diskpart.script.txt
+#     type diskpart.script.txt
+#     diskpart /s diskpart.script.txt
+#     del diskpart.script.txt
+
+#     mkdir "$(Build.ArtifactStagingDirectory)"
+#     mkdir "$(Build.BinariesDirectory)"
+#     mkdir "$(Build.SourcesDirectory)"
+#     mkdir "$(Common.TestResultsDirectory)"
+    
+#     IF EXIST "\MSBuildCache.old" ( rmdir /s /q "\MSBuildCache.old" )
+#     IF EXIST "\MSBuildCache" (
+#       rmdir /s /q "\MSBuildCache" || move "\MSBuildCache" "\MSBuildCache.old"
+#     )
+
+#     SET MSBuildCacheLocalCacheRootPath=R:\MSBuildCache
+#     echo ##vso[task.setvariable variable=MSBuildCacheLocalCacheRootPath;]R:\MSBuildCache
+
+#     # pushd %COW_TEST_DIR%
+#     # mkdir %MSBuildCacheLocalCacheRootPath%
+#     # echo test > %MSBuildCacheLocalCacheRootPath%\test.txt
+#     # dotnet run -- "%MSBuildCacheLocalCacheRootPath%\test.txt" "%MSBuildCacheLocalCacheRootPath%\test.txt.cloned"
+#     # dotnet run -- "%MSBuildCacheLocalCacheRootPath%\test.txt" "%AGENT_BUILDDIRECTORY%\test.txt.cloned"
+#     # del %MSBuildCacheLocalCacheRootPath%\test.txt
+#     # del %MSBuildCacheLocalCacheRootPath%\test.txt.cloned
+#     # del %AGENT_BUILDDIRECTORY%\test.txt.cloned
+#     # popd
+
+#     mkdir R:\TEMP
+#     echo ##vso[task.setvariable variable=TEMP;]R:\TEMP
+
+#     cd /d "$(Build.SourcesDirectory)"
+#     echo test > test.txt
+#     dotnet run --project %COW_TEST_DIR%\cow_test.csproj -- "%CD%\test.txt" "%CD%\test.txt.cloned"
+#     set TEST_RESULT=%ERRORLEVEL%
+#     del test.txt
+#     del test.txt.cloned
+
+#     exit /b %TEST_RESULT%
+#   displayName: 'Remap AGENT_BUILDDIRECTORY to a ReFS (DevDrv if available) volume'
+
+- checkout: self
+  submodules: recursive
+
 - script: |
-    @echo on
-
-    set MISTAKEN_PATH=%CD%ReFS.vhdx
-
-    pushd %TEMP%
+    cd /d "$(Build.SourcesDirectory)"
     rmdir /s /q cow_test
     git clone https://github.com/johnterickson/cow_test.git
     cd cow_test
-    set COW_TEST_DIR=%CD%
     dotnet build
-    popd
-    
-    D:
-    cd \
-
-    echo SELECT VDISK FILE=D:\ReFS.vhdx > diskpart.script.txt
-    echo DETACH VDISK >> diskpart.script.txt
-    diskpart /s diskpart.script.txt
-    del D:\ReFS.vhdx
-    del diskpart.script.txt
-
-    echo SELECT VDISK FILE=%MISTAKEN_PATH% > diskpart.script.txt
-    echo DETACH VDISK >> diskpart.script.txt
-    diskpart /s diskpart.script.txt
-    del %MISTAKEN_PATH%
-    del diskpart.script.txt
-
-    echo CREATE VDISK FILE=D:\ReFS.vhdx MAXIMUM=250000 TYPE=EXPANDABLE > diskpart.script.txt
-    echo SELECT VDISK FILE=D:\ReFS.vhdx >> diskpart.script.txt
-    echo ATTACH VDISK >> diskpart.script.txt
-    echo CREATE PARTITION PRIMARY >> diskpart.script.txt
-    echo FORMAT FS=REFS QUICK >> diskpart.script.txt
-    echo ASSIGN LETTER=R >> diskpart.script.txt
-    type diskpart.script.txt
-    diskpart /s diskpart.script.txt
-    del diskpart.script.txt
-
-    format R: /fs:ReFS /Q /X /Y /DevDrv || format R: /fs:ReFS /Q /X /Y
-
-    pushd %COW_TEST_DIR%
-    echo test > r:\test.txt
-    dotnet run -- "r:\test.txt" "r:\test.txt.cloned"
-    del r:\test.txt
-    del r:\test.txt.cloned
-    popd
-
-    IF EXIST "%AGENT_BUILDDIRECTORY%.old" ( rmdir /s /q "%AGENT_BUILDDIRECTORY%.old" )
-    IF EXIST "%AGENT_BUILDDIRECTORY%" (
-      rmdir /s /q "%AGENT_BUILDDIRECTORY%" || move "%AGENT_BUILDDIRECTORY%" "%AGENT_BUILDDIRECTORY%.old"
-    )
-
-    mkdir "%AGENT_BUILDDIRECTORY%"
-    echo SELECT VDISK FILE=D:\ReFS.vhdx >> diskpart.script.txt
-    echo SELECT VOLUME=R >> diskpart.script.txt
-    echo ASSIGN MOUNT=%AGENT_BUILDDIRECTORY% >> diskpart.script.txt
-    type diskpart.script.txt
-    diskpart /s diskpart.script.txt
-    del diskpart.script.txt
-
-    mkdir "$(Build.ArtifactStagingDirectory)"
-    mkdir "$(Build.BinariesDirectory)"
-    mkdir "$(Build.SourcesDirectory)"
-    mkdir "$(Common.TestResultsDirectory)"
-    
-    IF EXIST "\MSBuildCache.old" ( rmdir /s /q "\MSBuildCache.old" )
-    IF EXIST "\MSBuildCache" (
-      rmdir /s /q "\MSBuildCache" || move "\MSBuildCache" "\MSBuildCache.old"
-    )
-
-    SET MSBuildCacheLocalCacheRootPath=R:\MSBuildCache
-    echo ##vso[task.setvariable variable=MSBuildCacheLocalCacheRootPath;]R:\MSBuildCache
-
-    # pushd %COW_TEST_DIR%
-    # mkdir %MSBuildCacheLocalCacheRootPath%
-    # echo test > %MSBuildCacheLocalCacheRootPath%\test.txt
-    # dotnet run -- "%MSBuildCacheLocalCacheRootPath%\test.txt" "%MSBuildCacheLocalCacheRootPath%\test.txt.cloned"
-    # dotnet run -- "%MSBuildCacheLocalCacheRootPath%\test.txt" "%AGENT_BUILDDIRECTORY%\test.txt.cloned"
-    # del %MSBuildCacheLocalCacheRootPath%\test.txt
-    # del %MSBuildCacheLocalCacheRootPath%\test.txt.cloned
-    # del %AGENT_BUILDDIRECTORY%\test.txt.cloned
-    # popd
-
-    mkdir R:\TEMP
-    echo ##vso[task.setvariable variable=TEMP;]R:\TEMP
-
-    cd /d "$(Build.SourcesDirectory)"
     echo test > test.txt
     dotnet run --project %COW_TEST_DIR%\cow_test.csproj -- "%CD%\test.txt" "%CD%\test.txt.cloned"
     set TEST_RESULT=%ERRORLEVEL%
     del test.txt
     del test.txt.cloned
-
+    rmdir /s /q cow_test
     exit /b %TEST_RESULT%
-  displayName: 'Remap AGENT_BUILDDIRECTORY to a ReFS (DevDrv if available) volume'
-
-- checkout: self
-  submodules: recursive
+  displayName: 'Test CoW'
 
 # set up env (vs preview)
 - script: |
