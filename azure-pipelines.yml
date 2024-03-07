@@ -17,9 +17,11 @@ schedules:
     
 pool:
   name: 'MemoBuild-Pool-WCUS'
+  demands:
+    - WorkFolder -equals R:\_work
 
 variables:
-  NUGET_PACKAGES: D:\.nuget\packages
+  NUGET_PACKAGES: R:\.nuget\packages
   # SDL
   Codeql.Enabled: false
   runCodesignValidationInjection: false
@@ -81,7 +83,7 @@ strategy:
 steps:
 - powershell: 
     Get-Volume
-    
+
 # - script: |
 #     @echo on
 
