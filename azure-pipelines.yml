@@ -22,7 +22,6 @@ pool:
     - ImageOverride -equals $(Image)
 
 variables:
-  NUGET_PACKAGES: R:\.nuget\packages
   # SDL
   Codeql.Enabled: false
   runCodesignValidationInjection: false
@@ -45,6 +44,7 @@ strategy:
       AdditionalMsBuildArgs: ''
       Image: 'MemoBuild-Image-ReFS'
       AgentDrive: 'R'
+      NUGET_PACKAGES: R:\.nuget\packages
     release_x64-MSBuildCache-ReFS:
       BuildConfiguration: Release
       BuildPlatform: x64
@@ -52,6 +52,7 @@ strategy:
       MSBuildCacheEnabled: 'true'
       Image: 'MemoBuild-Image-ReFS'
       AgentDrive: 'R'
+      NUGET_PACKAGES: R:\.nuget\packages
     release_x64-MSBuildCache-EUCU-ReFS:
       BuildConfiguration: Release
       BuildPlatform: x64
@@ -60,12 +61,14 @@ strategy:
       MSBuildCacheCacheUniverse: '$(Build.BuildId)'
       Image: 'MemoBuild-Image-ReFS'
       AgentDrive: 'R'
+      NUGET_PACKAGES: R:\.nuget\packages
     release_x64-baseline-NTFS:
       BuildConfiguration: Release
       BuildPlatform: x64
       AdditionalMsBuildArgs: ''
       Image: 'MemoBuild-Image-NTFS'
       AgentDrive: 'D'
+      NUGET_PACKAGES: D:\.nuget\packages
     release_x64-MSBuildCache-NTFS:
       BuildConfiguration: Release
       BuildPlatform: x64
@@ -73,6 +76,7 @@ strategy:
       MSBuildCacheEnabled: 'true'
       Image: 'MemoBuild-Image-NTFS'
       AgentDrive: 'D'
+      NUGET_PACKAGES: D:\.nuget\packages
     release_x64-MSBuildCache-EUCU-NTFS:
       BuildConfiguration: Release
       BuildPlatform: x64
@@ -81,6 +85,7 @@ strategy:
       MSBuildCacheCacheUniverse: '$(Build.BuildId)'
       Image: 'MemoBuild-Image-NTFS'
       AgentDrive: 'D'
+      NUGET_PACKAGES: D:\.nuget\packages
 
 steps:
 - powershell: 
