@@ -16,9 +16,10 @@ schedules:
     - main
     
 pool:
-  name: $(PoolName)
+  name: 'MemoBuild-Pool-WCUS'
   demands:
     - WorkFolder -equals $(AgentDrive):\_work
+    - ImageOverride -equals $(Image)
 
 variables:
   NUGET_PACKAGES: R:\.nuget\packages
@@ -42,14 +43,14 @@ strategy:
       BuildConfiguration: Release
       BuildPlatform: x64
       AdditionalMsBuildArgs: ''
-      PoolName: 'MemoBuild-Pool-WCUS'
+      Image: 'MemoBuild-Image-ReFS'
       AgentDrive: 'R'
     release_x64-MSBuildCache-ReFS:
       BuildConfiguration: Release
       BuildPlatform: x64
       AdditionalMsBuildArgs: '/nodeReuse:false -graph -reportfileaccesses -p:MSBuildCacheLogDirectory=$(Build.ArtifactStagingDirectory)\logs\MSBuildCache'
       MSBuildCacheEnabled: 'true'
-      PoolName: 'MemoBuild-Pool-WCUS'
+      Image: 'MemoBuild-Image-ReFS'
       AgentDrive: 'R'
     release_x64-MSBuildCache-EUCU-ReFS:
       BuildConfiguration: Release
@@ -57,20 +58,20 @@ strategy:
       AdditionalMsBuildArgs: '/nodeReuse:false -graph -reportfileaccesses -p:MSBuildCacheLogDirectory=$(Build.ArtifactStagingDirectory)\logs\MSBuildCache'
       MSBuildCacheEnabled: 'true'
       MSBuildCacheCacheUniverse: '$(Build.BuildId)'
-      PoolName: 'MemoBuild-Pool-WCUS'
+      Image: 'MemoBuild-Image-ReFS'
       AgentDrive: 'R'
     release_x64-baseline-NTFS:
       BuildConfiguration: Release
       BuildPlatform: x64
       AdditionalMsBuildArgs: ''
-      PoolName: 'MemoBuild-Pool-WCUS-NTFS'
+      Image: 'MemoBuild-Image-NTFS'
       AgentDrive: 'D'
     release_x64-MSBuildCache-NTFS:
       BuildConfiguration: Release
       BuildPlatform: x64
       AdditionalMsBuildArgs: '/nodeReuse:false -graph -reportfileaccesses -p:MSBuildCacheLogDirectory=$(Build.ArtifactStagingDirectory)\logs\MSBuildCache'
       MSBuildCacheEnabled: 'true'
-      PoolName: 'MemoBuild-Pool-WCUS-NTFS'
+      Image: 'MemoBuild-Image-NTFS'
       AgentDrive: 'D'
     release_x64-MSBuildCache-EUCU-NTFS:
       BuildConfiguration: Release
@@ -78,7 +79,7 @@ strategy:
       AdditionalMsBuildArgs: '/nodeReuse:false -graph -reportfileaccesses -p:MSBuildCacheLogDirectory=$(Build.ArtifactStagingDirectory)\logs\MSBuildCache'
       MSBuildCacheEnabled: 'true'
       MSBuildCacheCacheUniverse: '$(Build.BuildId)'
-      PoolName: 'MemoBuild-Pool-WCUS-NTFS'
+      Image: 'MemoBuild-Image-NTFS'
       AgentDrive: 'D'
 
 steps:
