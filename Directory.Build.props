@@ -8,6 +8,11 @@
     />
   </Target>
 
+  <PropertyGroup>
+    <!-- There's lots of concurrent copies that stomp on each other. -->
+    <CopyRetryCount>10</CopyRetryCount>
+  </PropertyGroup>
+
   <!-- MsBuildCache -->
   <PropertyGroup>
     <!-- Off by default -->
