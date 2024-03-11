@@ -58,7 +58,7 @@ strategy:
       BuildPlatform: x64
       AdditionalMsBuildArgs: '/nodeReuse:false -graph -reportfileaccesses -p:MSBuildCacheLogDirectory=$(Build.ArtifactStagingDirectory)\logs\MSBuildCache'
       MSBuildCacheEnabled: 'true'
-      MSBuildCacheCacheUniverse: '$(Build.BuildId)'
+      MSBuildCacheCacheUniverse: '$(Build.BuildId)_ReFS'
       Image: 'MemoBuild-Image-ReFS'
       AgentDrive: 'R'
       NUGET_PACKAGES: R:\.nuget\packages
@@ -82,7 +82,7 @@ strategy:
       BuildPlatform: x64
       AdditionalMsBuildArgs: '/nodeReuse:false -graph -reportfileaccesses -p:MSBuildCacheLogDirectory=$(Build.ArtifactStagingDirectory)\logs\MSBuildCache'
       MSBuildCacheEnabled: 'true'
-      MSBuildCacheCacheUniverse: '$(Build.BuildId)'
+      MSBuildCacheCacheUniverse: '$(Build.BuildId)_NTFS'
       Image: 'MemoBuild-Image-NTFS'
       AgentDrive: 'D'
       NUGET_PACKAGES: D:\.nuget\packages
