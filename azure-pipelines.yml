@@ -206,9 +206,24 @@ steps:
   submodules: recursive
 
 - script: |
-    Logman query -ets
+    tasklist | sort
+    Logman query -ets | sort
     xperf -loggers
-  displayName: check for active profilers
+  displayName: show loggers
+
+# https://eng.ms/docs/products/geneva/collect/troubleshoot/etwcleanup
+- powershell: |
+    $dc = new-object -COM Pla.DataCollectorSetCollection
+    $dc.GetDataCollectorSets($null, "")
+    $dc| ?{$_.name.StartsWith("MA_ETWSESSION") -or $_.name.StartsWith("IfxViewerSession")} | %{$_.Stop($true)}
+    $dc.GetDataCollectorSets($null, "")
+    $dc| ?{$_.name.StartsWith("MA_ETWSESSION") -or $_.name.StartsWith("IfxViewerSession")} | %{$_.Delete()}
+  displayName: MA ETW Session Cleanup
+
+- script: |
+    ping -n 5 127.0.0.1
+    exit /b 1
+  displayName: kill the build
 
 # set up env (vs preview)
 - script: |
