@@ -257,6 +257,14 @@ steps:
   condition: and(succeeded(), eq(variables['CaptureDumps'], 'true'))
   displayName: 'Start procdump'
 
+# - task: DiagnosticsTask@0
+#   displayName: 'Start PerfView'
+#   inputs:
+#     operation: start
+#     collectors: |
+#       - perfview: /ClrEvents=JITSymbols /KernelEvents=Process+Thread+ImageLoad+Profile+DiskIO+FileIO /CPUSampleMSec:1000
+
+
 - script: >
     echo ON &&
     CALL "$(VsDevCmd)" &&
@@ -305,85 +313,4 @@ steps:
 - publish: $(Build.ArtifactStagingDirectory)\logs
   displayName: Publish Logs
   artifact: '$(System.JobDisplayName) logs'
-  condition: always()
-
-
-- script: |
-    rmdir /s /q "$(Build.ArtifactStagingDirectory)\logs"
-    mkdir "$(Build.ArtifactStagingDirectory)\logs"
-    git clean -xdf || git clean -xdf
-  displayName: 'Clean up, but keep local cache'
-
-# - task: DiagnosticsTask@0
-#   displayName: 'Start PerfView'
-#   inputs:
-#     operation: start
-#     collectors: |
-#       - perfview: /ClrEvents=JITSymbols /KernelEvents=Process+Thread+ImageLoad+Profile+DiskIO+FileIO /CPUSampleMSec:1000
-
-# - script: |
-#     pktmon filter remove
-#     pktmon filter add AFD -i 13.107.42.20
-#     mkdir "$(Build.ArtifactStagingDirectory)\logs"
-#     pktmon start --capture --file-name "$(Build.ArtifactStagingDirectory)\logs\pktmon.etl" --log-mode multi-file
-
-- template: .\build\pipelines\templates-v2\steps-restore-nuget.yml
-- script: |
-    del /q %TEMP%\procdump.exe
-    curl.exe https://live.sysinternals.com/procdump.exe -o %TEMP%\procdump.exe
-    mkdir "$(Build.ArtifactStagingDirectory)\logs" 2>NUL
-    start cmd /c %TEMP%\procdump.exe -w -ma -n 10 -s 30 msbuild "$(Build.ArtifactStagingDirectory)\logs" ^> $(Build.ArtifactStagingDirectory)\logs\procdump.log 2^>^&1
-    exit /b 0
-  condition: and(succeeded(), eq(variables['CaptureDumps'], 'true'))
-
-- script: >
-    echo ON &&
-    CALL "$(VsDevCmd)" &&
-    cd /d "$(Build.SourcesDirectory)" &&
-    msbuild.exe OpenConsole.sln
-    /p:Platform=$(BuildPlatform)
-    /p:Configuration=$(BuildConfiguration)
-    /p:WindowsTerminalOfficialBuild=true;WindowsTerminalBranding=Dev;PGOBuildMode=None
-    /bl:$(Build.ArtifactStagingDirectory)\logs\msbuild.binlog
-    /ds:false
-    $(AdditionalMsBuildArgs)
-  displayName: 'Build OpenConsole.sln'
-  env:
-    SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-# - task: VSBuild@1
-#   displayName: Build OpenConsole.sln
-#   inputs:
-#     solution: 'OpenConsole.sln'
-#     msbuildArgs: >-
-#       /p:WindowsTerminalOfficialBuild=true;WindowsTerminalBranding=Dev;PGOBuildMode=None
-#       /bl:$(Build.ArtifactStagingDirectory)\logs\msbuild.binlog
-#       /ds:false
-#       $(AdditionalMsBuildArgs)
-#     platform: $(BuildPlatform)
-#     configuration: $(BuildConfiguration)
-#     msbuildArchitecture: x64
-#     maximumCpuCount: false
-#   env:
-#     SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-
-# - script: |
-#     pktmon counters
-#     pktmon stop
-
-- script: |
-    taskkill /f /im msbuild.exe 2>NUL
-    echo msbuild stopped
-    exit /b 0
-  condition: and(succeeded(), eq(variables['CaptureDumps'], 'true'))
-- powershell: |
-    Get-Process -Name procdump | Wait-Process -Timeout 60
-    Get-Process -Name procdump | Stop-Process
-    echo procdump no longer running
-  displayName: 'Wait for procdump to finish'
-  errorActionPreference: continue
-  condition: and(succeeded(), eq(variables['CaptureDumps'], 'true'))
-  
-- publish: $(Build.ArtifactStagingDirectory)\logs
-  displayName: Publish Logs
-  artifact: '$(System.JobDisplayName) logs 2'
   condition: always()
