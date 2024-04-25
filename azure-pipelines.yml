@@ -35,6 +35,8 @@ variables:
   MSBUILDCACHE_PIPELINECACHING_BENCHMARK: 0
   # diagnostics
   # CaptureDumps: false
+  Diagnostics: PerfView
+  Diagnostics.PerfView.Arguments: /ClrEvents=JITSymbols /KernelEvents=Process+Thread+ImageLoad+Profile+DiskIO+FileIO /CPUSampleMSec:1000
 
 strategy:
   matrix:
@@ -214,6 +216,8 @@ steps:
 # https://eng.ms/docs/products/geneva/collect/troubleshoot/etwcleanup
 - powershell: |
     $dc = new-object -COM Pla.DataCollectorSetCollection
+    $dc.GetDataCollectorSets($null, "")
+    $dc| ?{$_.name.StartsWith("MA_ETWSESSION") -or $_.name.StartsWith("IfxViewerSession")}
     $dc.GetDataCollectorSets($null, "")
     $dc| ?{$_.name.StartsWith("MA_ETWSESSION") -or $_.name.StartsWith("IfxViewerSession")} | %{$_.Stop($true)}
     $dc.GetDataCollectorSets($null, "")
