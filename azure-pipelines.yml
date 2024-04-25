@@ -36,7 +36,7 @@ variables:
   # diagnostics
   # CaptureDumps: false
   # Diagnostics: PerfView
-  Diagnostics.PerfView.Arguments: /ClrEvents=JITSymbols /KernelEvents=Process+Thread+ImageLoad+Profile+DiskIO+FileIO /CPUSampleMSec:1000
+  Diagnostics.PerfView.Arguments: /ClrEvents=JITSymbols /KernelEvents=Process+Thread+ImageLoad+Profile+DiskIO+FileIO
 
 strategy:
   matrix:
