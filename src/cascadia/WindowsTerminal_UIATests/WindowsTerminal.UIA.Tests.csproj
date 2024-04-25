@@ -129,7 +129,7 @@
     <ItemGroup>
       <_CopyItems Include="$(SolutionDir)\dep\WinAppDriver\*.*" />
     </ItemGroup>
-    <Copy SourceFiles="@(_CopyItems)" DestinationFolder="$(OutDir)\WinAppDriver" SkipUnchangedFiles="false" Retries="3"/>
+    <Copy SourceFiles="@(_CopyItems)" DestinationFolder="$(OutDir)\WinAppDriver" />
   </Target>
   <Import Project="..\..\common.nugetversions.targets" />
 </Project>
