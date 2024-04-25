@@ -205,6 +205,11 @@ steps:
 - checkout: self
   submodules: recursive
 
+- script: |
+    Logman query -ets
+    xperf -loggers
+  displayName: check for active profilers
+
 # set up env (vs preview)
 - script: |
     cd %TEMP%
@@ -263,7 +268,6 @@ steps:
 #     operation: start
 #     collectors: |
 #       - perfview: /ClrEvents=JITSymbols /KernelEvents=Process+Thread+ImageLoad+Profile+DiskIO+FileIO /CPUSampleMSec:1000
-
 
 - script: >
     echo ON &&
