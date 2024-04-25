@@ -35,7 +35,7 @@ variables:
   MSBUILDCACHE_PIPELINECACHING_BENCHMARK: 0
   # diagnostics
   # CaptureDumps: false
-  Diagnostics: PerfView
+  # Diagnostics: PerfView
   Diagnostics.PerfView.Arguments: /ClrEvents=JITSymbols /KernelEvents=Process+Thread+ImageLoad+Profile+DiskIO+FileIO /CPUSampleMSec:1000
 
 strategy:
@@ -224,10 +224,23 @@ steps:
     $dc| ?{$_.name.StartsWith("MA_ETWSESSION") -or $_.name.StartsWith("IfxViewerSession")} | %{$_.Delete()}
   displayName: MA ETW Session Cleanup
 
-- script: |
-    ping -n 5 127.0.0.1
-    exit /b 1
+- task: DiagnosticsTask@0
+  displayName: 'Start PerfView'
+  inputs:
+    operation: start
+    collectors: |
+      - perfview: $(Diagnostics.PerfView.Arguments)
+
+- script: ping -n 5 127.0.0.1
+  displayName: stall
+- script: exit /b 1
   displayName: kill the build
+
+- task: DiagnosticsTask@0
+  displayName: 'Stop PerfView'
+  inputs:
+    operation: stop
+  condition: always()
 
 # set up env (vs preview)
 - script: |
