@@ -206,7 +206,7 @@ steps:
 
 - checkout: self
   submodules: recursive
-
+- powershell: Get-ComputerInfo -property "HyperV*"
 - script: |
     tasklist | sort
     Logman query -ets | sort
