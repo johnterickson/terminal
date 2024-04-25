@@ -147,7 +147,7 @@ The following command can be used to build the terminal package, and then deploy
 ```cmd
 pushd %OPENCON%\src\cascadia\CascadiaPackage
 bx
-"C:\Program Files\Microsoft Visual Studio\2022\Preview\Common7\IDE\DeployAppRecipe.exe" bin\%ARCH%\%_LAST_BUILD_CONF%\CascadiaPackage.build.appxrecipe
+"C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\DeployAppRecipe.exe" bin\%ARCH%\%_LAST_BUILD_CONF%\CascadiaPackage.build.appxrecipe
 popd
 ```
 

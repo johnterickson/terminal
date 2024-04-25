@@ -31,7 +31,7 @@ variables:
   VSO_DEDUP_REDIRECT_TIMEOUT_IN_SEC: 5
   # for msbuildcache
   EnablePipelineCache: true
-  VsDevCmd: 'C:\Program Files\Microsoft Visual Studio\2022\Preview\Common7\Tools\VsDevCmd.bat'
+  VsDevCmd: 'C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat'
   MSBUILDCACHE_PIPELINECACHING_BENCHMARK: 0
   # diagnostics
   # CaptureDumps: false
