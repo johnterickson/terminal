@@ -36,7 +36,8 @@ variables:
   # diagnostics
   # CaptureDumps: false
   # Diagnostics: PerfView
-  Diagnostics.PerfView.Arguments: -ClrEvents=JITSymbols -KernelEvents=Process+Thread+ImageLoad+Profile -CPUSampleMSec:1000 -ThreadTime -TplEvents:Tasks
+  # https://github.com/microsoft/perfview/issues/954#issuecomment-1090567093
+  Diagnostics.PerfView.Arguments: -ClrEvents=JITSymbols -KernelEvents=Process+Thread+ImageLoad+Profile -CPUSampleMSec:1000 -ThreadTime -TplEvents:Tasks /Providers:.NETTasks:0x1ff:@StacksEnabled=true
 
 strategy:
   matrix:
