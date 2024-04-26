@@ -206,43 +206,7 @@ steps:
 
 - checkout: self
   submodules: recursive
-- powershell: Get-ComputerInfo -property "HyperV*"
-- script: |
-    tasklist | sort
-    Logman query -ets | sort
-    xperf -loggers
-  displayName: show loggers
 
-# https://eng.ms/docs/products/geneva/collect/troubleshoot/etwcleanup
-- powershell: |
-    $dc = new-object -COM Pla.DataCollectorSetCollection
-    $dc.GetDataCollectorSets($null, "")
-    $dc| ?{$_.name.StartsWith("MA_ETWSESSION") -or $_.name.StartsWith("IfxViewerSession")}
-    $dc.GetDataCollectorSets($null, "")
-    $dc| ?{$_.name.StartsWith("MA_ETWSESSION") -or $_.name.StartsWith("IfxViewerSession")} | %{$_.Stop($true)}
-    $dc.GetDataCollectorSets($null, "")
-    $dc| ?{$_.name.StartsWith("MA_ETWSESSION") -or $_.name.StartsWith("IfxViewerSession")} | %{$_.Delete()}
-  displayName: MA ETW Session Cleanup
-
-- task: DiagnosticsTask@0
-  displayName: 'Start PerfView'
-  inputs:
-    operation: start
-    collectors: |
-      - perfview: $(Diagnostics.PerfView.Arguments)
-
-- script: ping -n 5 127.0.0.1
-  displayName: stall
-- script: exit /b 1
-  displayName: kill the build
-
-- task: DiagnosticsTask@0
-  displayName: 'Stop PerfView'
-  inputs:
-    operation: stop
-  condition: always()
-
-# set up env (vs preview)
 - script: |
     cd %TEMP%
     echo delete old logs
@@ -294,12 +258,12 @@ steps:
   condition: and(succeeded(), eq(variables['CaptureDumps'], 'true'))
   displayName: 'Start procdump'
 
-# - task: DiagnosticsTask@0
-#   displayName: 'Start PerfView'
-#   inputs:
-#     operation: start
-#     collectors: |
-#       - perfview: /ClrEvents=JITSymbols /KernelEvents=Process+Thread+ImageLoad+Profile+DiskIO+FileIO /CPUSampleMSec:1000
+- task: DiagnosticsTask@0
+  displayName: 'Start PerfView'
+  inputs:
+    operation: start
+    collectors: |
+      - perfview: $(Diagnostics.PerfView.Arguments)
 
 - script: >
     echo ON &&
@@ -315,6 +279,12 @@ steps:
   displayName: 'Build OpenConsole.sln'
   env:
     SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+
+- task: DiagnosticsTask@0
+  displayName: 'Stop PerfView'
+  inputs:
+    operation: stop
+  condition: always()
 
 # - task: VSBuild@1
 #   displayName: Build OpenConsole.sln
