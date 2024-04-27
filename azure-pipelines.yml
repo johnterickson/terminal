@@ -263,7 +263,7 @@ steps:
   inputs:
     operation: start
     collectors: |
-      - perfview: /CPUSampleMSec:1000 /threadTime
+      - perfview: -KernelEvents=Process+Thread+ImageLoad+Profile -CPUSampleMSec:1000 /threadTime
 
 - script: >
     echo ON &&
