@@ -263,7 +263,7 @@ steps:
   inputs:
     operation: start
     collectors: |
-      - perfview: -ClrEvents=JITSymbols -KernelEvents=Process+Thread+ImageLoad+Profile -CPUSampleMSec:1000 -ThreadTime -TplEvents:Tasks /Providers:.NETTasks:0x1ff:@StacksEnabled=true
+      - perfview: /CPUSampleMSec:1000 /threadTime
 
 - script: >
     echo ON &&
