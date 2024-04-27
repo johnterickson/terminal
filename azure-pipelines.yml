@@ -14,12 +14,6 @@ schedules:
   branches:
     include:
     - main
-    
-pool:
-  name: 'MemoBuild-Pool-WCUS'
-  demands:
-    - WorkFolder -equals $(AgentDrive):\_work
-    - ImageOverride -equals $(Image)
 
 variables:
   # SDL
@@ -37,7 +31,7 @@ variables:
   # CaptureDumps: false
   # Diagnostics: PerfView
   # https://github.com/microsoft/perfview/issues/954#issuecomment-1090567093
-  Diagnostics.PerfView.Arguments: -ClrEvents=JITSymbols -KernelEvents=Process+Thread+ImageLoad+Profile -CPUSampleMSec:1000 -ThreadTime -TplEvents:Tasks /Providers:.NETTasks:0x1ff:@StacksEnabled=true
+  # Diagnostics.PerfView.Arguments: -ClrEvents=JITSymbols -KernelEvents=Process+Thread+ImageLoad+Profile -CPUSampleMSec:1000 -ThreadTime -TplEvents:Tasks /Providers:.NETTasks:0x1ff:@StacksEnabled=true
 
 strategy:
   matrix:
@@ -45,7 +39,7 @@ strategy:
       BuildConfiguration: Release
       BuildPlatform: x64
       AdditionalMsBuildArgs: ''
-      Image: 'MemoBuild-Image-ReFS'
+      Pool: 'MemoBuild-Pool-WCUS'
       AgentDrive: 'R'
       NUGET_PACKAGES: R:\.nuget\packages
     release_x64-MSBuildCache-ReFS:
@@ -53,7 +47,7 @@ strategy:
       BuildPlatform: x64
       AdditionalMsBuildArgs: '/nodeReuse:false -graph -reportfileaccesses -p:MSBuildCacheLogDirectory=$(Build.ArtifactStagingDirectory)\logs\MSBuildCache'
       MSBuildCacheEnabled: 'true'
-      Image: 'MemoBuild-Image-ReFS'
+      Pool: 'MemoBuild-Pool-WCUS'
       AgentDrive: 'R'
       NUGET_PACKAGES: R:\.nuget\packages
     release_x64-MSBuildCache-EUCU-ReFS:
@@ -62,14 +56,14 @@ strategy:
       AdditionalMsBuildArgs: '/nodeReuse:false -graph -reportfileaccesses -p:MSBuildCacheLogDirectory=$(Build.ArtifactStagingDirectory)\logs\MSBuildCache'
       MSBuildCacheEnabled: 'true'
       MSBuildCacheCacheUniverse: '$(Build.BuildId)_ReFS'
-      Image: 'MemoBuild-Image-ReFS'
+      Pool: 'MemoBuild-Pool-WCUS'
       AgentDrive: 'R'
       NUGET_PACKAGES: R:\.nuget\packages
     release_x64-baseline-NTFS:
       BuildConfiguration: Release
       BuildPlatform: x64
       AdditionalMsBuildArgs: ''
-      Image: 'MemoBuild-Image-NTFS'
+      Pool: 'MemoBuild-Pool-WCUS-NTFS'
       AgentDrive: 'D'
       NUGET_PACKAGES: D:\.nuget\packages
     release_x64-MSBuildCache-NTFS:
@@ -77,7 +71,7 @@ strategy:
       BuildPlatform: x64
       AdditionalMsBuildArgs: '/nodeReuse:false -graph -reportfileaccesses -p:MSBuildCacheLogDirectory=$(Build.ArtifactStagingDirectory)\logs\MSBuildCache'
       MSBuildCacheEnabled: 'true'
-      Image: 'MemoBuild-Image-NTFS'
+      Pool: 'MemoBuild-Pool-WCUS-NTFS'
       AgentDrive: 'D'
       NUGET_PACKAGES: D:\.nuget\packages
     release_x64-MSBuildCache-EUCU-NTFS:
@@ -86,9 +80,14 @@ strategy:
       AdditionalMsBuildArgs: '/nodeReuse:false -graph -reportfileaccesses -p:MSBuildCacheLogDirectory=$(Build.ArtifactStagingDirectory)\logs\MSBuildCache'
       MSBuildCacheEnabled: 'true'
       MSBuildCacheCacheUniverse: '$(Build.BuildId)_NTFS'
-      Image: 'MemoBuild-Image-NTFS'
+      Pool: 'MemoBuild-Pool-WCUS-NTFS'
       AgentDrive: 'D'
       NUGET_PACKAGES: D:\.nuget\packages
+
+pool:
+  name: $(Pool)
+  demands:
+    - WorkFolder -equals $(AgentDrive):\_work
 
 steps:
 - powershell: 
@@ -264,7 +263,7 @@ steps:
   inputs:
     operation: start
     collectors: |
-      - perfview: $(Diagnostics.PerfView.Arguments)
+      - perfview: -ClrEvents=JITSymbols -KernelEvents=Process+Thread+ImageLoad+Profile -CPUSampleMSec:1000 -ThreadTime -TplEvents:Tasks /Providers:.NETTasks:0x1ff:@StacksEnabled=true
 
 - script: >
     echo ON &&
