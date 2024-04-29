@@ -258,12 +258,12 @@ steps:
   condition: and(succeeded(), eq(variables['CaptureDumps'], 'true'))
   displayName: 'Start procdump'
 
-- task: DiagnosticsTask@0
-  displayName: 'Start PerfView'
-  inputs:
-    operation: start
-    collectors: |
-      - perfview: -KernelEvents=Process+Thread+ImageLoad+Profile -CPUSampleMSec:1000 /threadTime
+# - task: DiagnosticsTask@0
+#   displayName: 'Start PerfView'
+#   inputs:
+#     operation: start
+#     collectors: |
+#       - perfview: -KernelEvents=Process+Thread+ImageLoad+Profile -CPUSampleMSec:1000 /threadTime
 
 - script: >
     echo ON &&
@@ -280,11 +280,11 @@ steps:
   env:
     SYSTEM_ACCESSTOKEN: $(System.AccessToken)
 
-- task: DiagnosticsTask@0
-  displayName: 'Stop PerfView'
-  inputs:
-    operation: stop
-  condition: always()
+# - task: DiagnosticsTask@0
+#   displayName: 'Stop PerfView'
+#   inputs:
+#     operation: stop
+#   condition: always()
 
 # - task: VSBuild@1
 #   displayName: Build OpenConsole.sln
